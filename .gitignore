@@ -1,0 +1,7 @@
+places
+undo-history
+history
+elpa
+auto-save-list
+*.elc
+kill-ring-saved.el
