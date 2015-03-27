@@ -1,3 +1,18 @@
+(global-set-key (kbd "C-z") ctl-x-map)
+
+(defun kill-visual-line-or-region (beg end &optional region direction)
+  (interactive (list (mark) (point) 'region) "P")
+  (if (region-active-p)
+      (kill-region beg end region)
+    (kill-visual-line direction)))
+
+(global-set-key (kbd "M-<right>") 'forward-list)
+(global-set-key (kbd "M-<left>") 'backward-list)
+(global-set-key (kbd "C-k") 'kill-visual-line-or-region)
+(global-set-key (kbd "C-w") 'delete-other-windows)
+(global-set-key (kbd "C-l") 'goto-line)
+(global-set-key (kbd "C-<return>") 'delete-trailing-whitespace)
+
 (push "~/.emacs.d/lisp" load-path)
 
 (savehist-mode 1)
@@ -64,20 +79,6 @@
 (dolist (type edity-types)
   (add-hook (type->hook type) 'my-typo-init))
 
-(global-set-key (kbd "C-z") ctl-x-map)
-
-(defun kill-visual-line-or-region (beg end &optional region direction)
-  (interactive (list (mark) (point) 'region) "P")
-  (if (region-active-p)
-      (kill-region beg end region)
-    (kill-visual-line direction)))
-
-(global-set-key (kbd "M-<right>") 'forward-list)
-(global-set-key (kbd "M-<left>") 'backward-list)
-(global-set-key (kbd "C-k") 'kill-visual-line-or-region)
-(global-set-key (kbd "C-w") 'delete-other-windows)
-(global-set-key (kbd "C-l") 'goto-line)
-(global-set-key (kbd "C-<return>") 'delete-trailing-whitespace)
 (autoload 'bison-mode "bison-mode.el")
 (autoload 'flex-mode "flex-mode.el")
 
@@ -86,11 +87,16 @@
 			 ("\\.l$" . flex-mode))
 		       auto-mode-alist))
 
+(require 'package-require)
+
+(package-require 'bookmark+)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(bmkp-last-as-first-bookmark-file "/extra/hacker/.emacs.d/bookmarks")
  '(cursor-type (quote bar))
  '(global-visual-line-mode t)
  '(indent-tabs-mode nil)
