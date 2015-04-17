@@ -12,11 +12,23 @@
 (global-set-key (kbd "C-w") 'delete-other-windows)
 (global-set-key (kbd "C-l") 'goto-line)
 (global-set-key (kbd "C-<return>") 'delete-trailing-whitespace)
+(global-set-key (kbd "C-<backspace>") 'fixup-whitespace)
+
 
 (push "~/.emacs.d/lisp" load-path)
 
+(require 'types)
+
+(dolist (type programmy-types)
+         (add-hook (type->hook type)
+                   (if (eq type 'c)
+                       '(lambda ()
+                          (local-set-key (kbd "RET") 'c-indent-new-comment-line))
+                     '(lambda ()
+                        (local-set-key (kbd "RET") 'newline-and-indent)))))
+                                        
 (savehist-mode 1)
-(require 'savekill)
+;(require 'savekill)
 (require 'lazyclipboard)
 
 (require 'quote-display)
@@ -104,6 +116,7 @@
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(kill-whole-line t)
+ '(nxml-slash-auto-complete-flag t)
  '(safe-local-variable-values (quote ((encoding . utf8))))
  '(track-eol t)
  '(visual-line-fringe-indicators (quote (nil right-curly-arrow))))
