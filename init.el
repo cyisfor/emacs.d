@@ -10,22 +10,28 @@
 (global-set-key (kbd "M-<left>") 'backward-list)
 (global-set-key (kbd "C-k") 'kill-visual-line-or-region)
 (global-set-key (kbd "C-w") 'delete-other-windows)
+(global-set-key (kbd "M-l") 'redraw-display)
 (global-set-key (kbd "C-l") 'goto-line)
-(global-set-key (kbd "C-<return>") 'delete-trailing-whitespace)
+(global-set-key (kbd "C-<pause>") 'delete-trailing-whitespace)
 (global-set-key (kbd "C-<backspace>") 'fixup-whitespace)
 
-
+(push "~/packages/bzr/python-mode/" load-path)
 (push "~/.emacs.d/lisp" load-path)
 
+(require 'python-mode)
 (require 'types)
 
 (dolist (type programmy-types)
          (add-hook (type->hook type)
                    (if (eq type 'c)
                        '(lambda ()
-                          (local-set-key (kbd "RET") 'c-indent-new-comment-line))
+                          (local-set-key (kbd "<return>") 'c-indent-new-comment-line)
+                          (local-set-key (kbd "C-<return>") 'newline))
+                          (local-set-key (kbd "M-<return>") 'electric-indent-just-newline))
                      '(lambda ()
-                        (local-set-key (kbd "RET") 'newline-and-indent)))))
+                        (local-set-key (kbd "RET") 'newline-and-indent)
+                        (local-set-key (kbd "C-<return>") 'newline)
+                        (local-set-key (kbd "M-<return>") 'electric-indent-just-newline))))
                                         
 (savehist-mode 1)
 ;(require 'savekill)
@@ -102,8 +108,19 @@
 (require 'package-require)
 
 (package-require 'bookmark+)
-(package-require 'yasnippet)
-(yas-global-mode 1)
+;(package-require 'yasnippet)
+;(yas-global-mode 1)
+
+(push "~/packages/git/autopair/" load-path)
+(require 'autopair)
+(autopair-global-mode)
+
+(require 'python-skeleton)
+
+(push "~/packages/git/lyqi" load-path)
+(add-to-list 'auto-mode-alist '("\\.ly$" . lyqi-mode))
+(add-to-list 'auto-mode-alist '("\\.ily$" . lyqi-mode))
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -117,6 +134,10 @@
  '(inhibit-startup-screen t)
  '(kill-whole-line t)
  '(nxml-slash-auto-complete-flag t)
+ '(py-complete-function (lambda (&rest args) nil))
+ '(py-electric-colon-active-p t)
+ '(py-electric-colon-greedy-p t)
+ '(py-electric-kill-backward-p t)
  '(safe-local-variable-values (quote ((encoding . utf8))))
  '(track-eol t)
  '(visual-line-fringe-indicators (quote (nil right-curly-arrow))))
@@ -125,4 +146,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Bitstream Vera Sans" :foundry "bitstream" :slant normal :weight normal :height 143 :width normal)))))
+ '(default ((t (:family "Bitstream Vera Sans" :foundry "bitstream" :slant normal :weight normal :height 143 :width normal))))
+ '(py-decorators-face ((t (:inherit font-lock-keyword-face :foreground "orange"))))
+ '(py-def-class-face ((t (:inherit font-lock-keyword-face :foreground "hot pink"))))
+ '(py-exception-name-face ((t (:inherit font-lock-builtin-face :weight bold))))
+ '(py-import-from-face ((t (:inherit font-lock-keyword-face :underline t))))
+ '(py-number-face ((t (:inherit default :foreground "orange red"))))
+ '(py-object-reference-face ((t (:inherit py-pseudo-keyword-face :foreground "blue"))))
+ '(py-pseudo-keyword-face ((t (:inherit font-lock-keyword-face :foreground "lime green"))))
+ '(py-try-if-face ((t (:inherit font-lock-keyword-face :weight bold))))
+ '(py-variable-name-face ((t (:inherit default :foreground "light sea green")))))
