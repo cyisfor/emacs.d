@@ -15,6 +15,18 @@
 (global-set-key (kbd "C-<pause>") 'delete-trailing-whitespace)
 (global-set-key (kbd "C-<backspace>") 'fixup-whitespace)
 
+(global-set-key (kbd "C-g") 'abort-recursive-edit)
+(global-set-key (kbd "C-]") 'keyboard-quit)
+
+(defun switch-to-minibuffer ()
+  "Switch to minibuffer window."
+  (interactive)
+  (if (active-minibuffer-window)
+      (select-window (active-minibuffer-window))
+    (error "Minibuffer is not active")))
+
+(global-set-key "\C-co" 'switch-to-minibuffer) ;; Bind to `C-c o'
+
 (push "~/packages/bzr/python-mode/" load-path)
 (push "~/.emacs.d/lisp" load-path)
 
@@ -29,7 +41,7 @@
                           (local-set-key (kbd "C-<return>") 'newline))
                           (local-set-key (kbd "M-<return>") 'electric-indent-just-newline))
                      '(lambda ()
-                        (local-set-key (kbd "RET") 'newline-and-indent)
+                        (local-set-key (kbd "<return>") 'newline-and-indent)
                         (local-set-key (kbd "C-<return>") 'newline)
                         (local-set-key (kbd "M-<return>") 'electric-indent-just-newline))))
                                         
@@ -113,14 +125,17 @@
 
 (push "~/packages/git/autopair/" load-path)
 (require 'autopair)
-(autopair-global-mode)
+(dolist (type programmy-types)
+         (add-hook (type->hook type)
+                   'autopair-mode))
 
 (require 'python-skeleton)
 
-(push "~/packages/git/lyqi" load-path)
-(add-to-list 'auto-mode-alist '("\\.ly$" . lyqi-mode))
-(add-to-list 'auto-mode-alist '("\\.ily$" . lyqi-mode))
-
+;; (load "~/packages/git/lyqi/lyqi")
+;; (setq auto-mode-alist (append
+;;                        '(("\\.ly$" . lyqi-mode)
+;;                          ("\\.ily$" . lyqi-mode))
+;;                        auto-mode-alist))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -133,6 +148,7 @@
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(kill-whole-line t)
+ '(max-specpdl-size 3000)
  '(nxml-slash-auto-complete-flag t)
  '(py-complete-function (lambda (&rest args) nil))
  '(py-electric-colon-active-p t)
