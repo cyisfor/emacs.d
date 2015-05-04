@@ -123,13 +123,16 @@
 ;(package-require 'yasnippet)
 ;(yas-global-mode 1)
 
-(push "~/packages/git/autopair/" load-path)
-(require 'autopair)
-(dolist (type programmy-types)
-         (add-hook (type->hook type)
-                   'autopair-mode))
+;; (push "~/packages/git/autopair/" load-path)
+;; (require 'autopair)
+;; (dolist (type programmy-types)
+;;          (add-hook (type->hook type)
+;;                    'autopair-mode))
 
-(require 'python-skeleton)
+;; (require 'python-skeleton)
+
+(push "~/packages/git/rust-mode/" load-path)
+(require 'rust-mode)
 
 ;; (load "~/packages/git/lyqi/lyqi")
 ;; (setq auto-mode-alist (append
