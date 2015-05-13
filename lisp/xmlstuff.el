@@ -56,6 +56,6 @@
   (local-set-key [?\C-d] "\C-\M-n"))
 
 (dolist (type htmly-types)
-  (add-hook (type->hook type) 'html-shortcuts))
+  (add-hook (type->hook type) 'html-shortcuts) nil t)
 
 (provide 'xmlstuff)

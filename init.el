@@ -1,4 +1,10 @@
+(when (file-exists-p "~/.emacs.d/init.elc")
+  (delete-file "~/.emacs.d/init.elc"))
+
 (global-set-key (kbd "C-z") ctl-x-map)
+(global-set-key (kbd "M-z") 'execute-extended-command)
+(global-set-key (kbd "M-k") 'zap-to-char) ; more useful than kill-sentence
+;; could set M-x to kill-sentence to complete the circle, meh
 
 (defun kill-visual-line-or-region (beg end &optional region direction)
   (interactive (list (mark) (point) 'region) "P")
@@ -82,6 +88,7 @@
 
 (setq auto-mode-alist (append
 		       '(("\.lua$" . lua-mode)
+                         ("\.hs$" . haskell-mode)
 			 ("\.hish$" . html-mode))
 		       auto-mode-alist))
 (autoload 'lua-mode "lua-mode" "Lua Editing mode." t)
@@ -120,8 +127,8 @@
 (require 'package-require)
 
 (package-require 'bookmark+)
-;(package-require 'yasnippet)
-;(yas-global-mode 1)
+(package-require 'yasnippet)
+(yas-global-mode 1)
 
 ;; (push "~/packages/git/autopair/" load-path)
 ;; (require 'autopair)
@@ -131,14 +138,53 @@
 
 ;; (require 'python-skeleton)
 
-(push "~/packages/git/rust-mode/" load-path)
-(require 'rust-mode)
+;; (push "~/packages/git/rust-mode/" load-path)
+;; (require 'rust-mode)
+
+;;(require 'haskell-mode-autoloads)
+
+;;(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+;;(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+
+;;(push "~/packages/git/emacs-haskell-unicode-input-method" load-path)
+;;(require 'haskell-unicode-input-method)
+
+;;(add-hook 'haskell-mode-hook 'quail-activate)
+
+(autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
+(setq auto-mode-alist (append '(("\\.\\(frm\\|vbs\\|bas\\|cls\\)$" .
+                                 visual-basic-mode)) auto-mode-alist))
 
 ;; (load "~/packages/git/lyqi/lyqi")
 ;; (setq auto-mode-alist (append
 ;;                        '(("\\.ly$" . lyqi-mode)
 ;;                          ("\\.ily$" . lyqi-mode))
 ;;                        auto-mode-alist))
+
+(push "~/packages/git/go-mode.el/" load-path)
+(require 'go-mode-autoloads)
+(defun cancellable-gofmt-before-save ()
+  (interactive)
+  (condition-case nil
+      (gofmt-before-save)
+      (quit nil)))
+(defun gofmt-mode ()
+  (interactive)
+  (add-hook 'before-save-hook 'cancellable-gofmt-before-save nil t)
+  (go-mode))
+(add-to-list 'auto-mode-alist (cons "\\.go\\'" 'gofmt-mode)) 
+
+(push "~/packages/git/slime" load-path)
+(require 'slime-autoloads)
+(setq slime-lisp-implementations
+      '((sbcl ("sbcl" "--core" "/extra/user/packages/git/slime/sbcl.core-for-slime"))))
+
+;; (setq inferior-lisp-program "/usr/bin/sbcl")
+;; (setq slime-contribs '(slime-fancy))
+
+;; (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+;;   "Prevent annoying \"Active processes exist\" query when you quit Emacs."
+;;   (flet ((process-list ())) ad-do-it))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -148,6 +194,7 @@
  '(bmkp-last-as-first-bookmark-file "/extra/hacker/.emacs.d/bookmarks")
  '(cursor-type (quote bar))
  '(global-visual-line-mode t)
+ '(gofmt-command "goimports")
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(kill-whole-line t)
@@ -158,6 +205,8 @@
  '(py-electric-colon-greedy-p t)
  '(py-electric-kill-backward-p t)
  '(safe-local-variable-values (quote ((encoding . utf8))))
+ '(slime-auto-start (quote always))
+ '(tab-width 4)
  '(track-eol t)
  '(visual-line-fringe-indicators (quote (nil right-curly-arrow))))
 (custom-set-faces
@@ -165,7 +214,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Bitstream Vera Sans" :foundry "bitstream" :slant normal :weight normal :height 143 :width normal))))
+ '(default ((t (:family "DejaVu Sans Mono" :foundry "unknown" :slant normal :weight normal :height 143 :width normal))))
  '(py-decorators-face ((t (:inherit font-lock-keyword-face :foreground "orange"))))
  '(py-def-class-face ((t (:inherit font-lock-keyword-face :foreground "hot pink"))))
  '(py-exception-name-face ((t (:inherit font-lock-builtin-face :weight bold))))
