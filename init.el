@@ -186,6 +186,8 @@
 ;;   "Prevent annoying \"Active processes exist\" query when you quit Emacs."
 ;;   (flet ((process-list ())) ad-do-it))
 
+(require 'exit-saver)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -193,8 +195,11 @@
  ;; If there is more than one, they won't work right.
  '(bmkp-last-as-first-bookmark-file "/extra/hacker/.emacs.d/bookmarks")
  '(cursor-type (quote bar))
+ '(global-hl-line-mode t)
+ '(global-linum-mode t)
  '(global-visual-line-mode t)
  '(gofmt-command "goimports")
+ '(ibuffer-always-compile-formats t)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(kill-whole-line t)
@@ -203,7 +208,6 @@
  '(py-complete-function (lambda (&rest args) nil))
  '(py-electric-colon-active-p t)
  '(py-electric-colon-greedy-p t)
- '(py-electric-kill-backward-p t)
  '(safe-local-variable-values (quote ((encoding . utf8))))
  '(slime-auto-start (quote always))
  '(tab-width 4)
