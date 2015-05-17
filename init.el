@@ -138,8 +138,8 @@
 
 ;; (require 'python-skeleton)
 
-;; (push "~/packages/git/rust-mode/" load-path)
-;; (require 'rust-mode)
+(push "~/packages/git/rust-mode/" load-path)
+(require 'rust-mode)
 
 ;;(require 'haskell-mode-autoloads)
 
