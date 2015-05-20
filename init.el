@@ -35,6 +35,7 @@
 
 (push "~/packages/bzr/python-mode/" load-path)
 (push "~/.emacs.d/lisp" load-path)
+(byte-recompile-directory (expand-file-name "~/.emacs.d/lisp"))
 
 (require 'python-mode)
 (require 'types)
@@ -187,6 +188,8 @@
 ;;   (flet ((process-list ())) ad-do-it))
 
 (require 'exit-saver)
+
+(require 'sexpfun)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
