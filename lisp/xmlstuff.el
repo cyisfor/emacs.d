@@ -1,12 +1,20 @@
-; -*- mode: Lisp; lexical-binding: t -*-
 
 (require 'types)
+(require 'assoc-add)
 
-(setq auto-mode-alist (cons
-		       '("\.hish$" . html-mode)
+;(add-hook 'html-mode-hook (lambda () (electric-indent-local-mode -1)))
+
+(defun hish-mode ()
+  (interactive)
+  (html-mode)
+  (electric-indent-local-mode -1)
+  (print (list 'eeemem electric-indent-mode)))
+ 
+(setq auto-mode-alist (assoc-add 
+		       '("\.hish$" . hish-mode)
 		       auto-mode-alist))
 
-(setq htmly-types '(sgml html xml nxml text))
+(setq htmly-types '(sgml html xml nxml text hish))
 (setq edity-types (append htmly-types edity-types))
 
 ; strike out is ctrl-p? meh...
@@ -16,28 +24,33 @@
 
 (setq mappings-memo nil)
 
-; http://stackoverflow.com/a/4513683
-(when (display-graphic-p)
-   (keyboard-translate ?\C-i ?\H-i))
+(setq translated-daemon nil)
 
 ; passing a list ending in a character to the low level event-convert-list
 ; returns an integer, which made a 1-element vector works for local-set-key
 
-(defun maybecontrol (sym)
-  (vector (event-convert-list
+(defun maybecontrolderp (sym)
    (list
     (if (display-graphic-p)
 	(if (eq sym 'i)
 	'hyper
 	'control)
       'meta)
-    (string-to-char (symbol-name sym))))))
+    (string-to-char (symbol-name sym))))
+
+(defun maybecontrol (sym)
+  (vector (event-convert-list (maybecontrolderp sym))))
 
 (require 'cl) ; for flet
 
 (defun html-shortcuts ()
+  (when (eq translated-demon nil)
+    ;; http://stackoverflow.com/a/4513683
+    (when (display-graphic-p)
+      (keyboard-translate ?\C-i ?\H-i))
+    (setq translated-demon t))
   (when (eq mappings-memo nil)
-    (flet ((funfortag (tag)
+    (cl-flet ((funfortag (tag)
 		      (lambda ()
 			(interactive)
 			(sgml-tag tag))))      

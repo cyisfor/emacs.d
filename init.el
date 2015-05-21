@@ -33,10 +33,12 @@
 
 (global-set-key "\C-co" 'switch-to-minibuffer) ;; Bind to `C-c o'
 
-(push "~/packages/bzr/python-mode/" load-path)
 (push "~/.emacs.d/lisp" load-path)
 (byte-recompile-directory (expand-file-name "~/.emacs.d/lisp"))
 
+(require 'exit-saver)
+
+(push "~/packages/bzr/python-mode/" load-path)
 (require 'python-mode)
 (require 'types)
 
@@ -94,7 +96,6 @@
 		       auto-mode-alist))
 (autoload 'lua-mode "lua-mode" "Lua Editing mode." t)
 
-(require 'xmlstuff)
 (require 'gitcommit)
 
 (setq buffer-face-mode-face '(:family "Bitstream Vera Sans Mono" :height 140 :width semi-expanded))
@@ -109,7 +110,6 @@
 (typopunct-change-language 'english t)
 
 (require 'loctitle)
-(message "hi")
 
 (defun my-typo-init ()
   (typopunct-mode 1))
@@ -117,19 +117,21 @@
 (dolist (type edity-types)
   (add-hook (type->hook type) 'my-typo-init))
 
-(autoload 'bison-mode "bison-mode.el")
-(autoload 'flex-mode "flex-mode.el")
+;; (autoload 'bison-mode "bison-mode.el")
+;; (autoload 'flex-mode "flex-mode.el")
 
-(setq auto-mode-alist (append
-		       '(("\\.y$" . bison-mode)
-			 ("\\.l$" . flex-mode))
-		       auto-mode-alist))
+;; (setq auto-mode-alist (append
+;; 		       '(("\\.y$" . bison-mode)
+;; 			 ("\\.l$" . flex-mode))
+;; 		       auto-mode-alist))
 
 (require 'package-require)
 
-(package-require 'bookmark+)
 (package-require 'yasnippet)
 (yas-global-mode 1)
+
+(require 'xmlstuff)
+(package-require 'bookmark+)
 
 ;; (push "~/packages/git/autopair/" load-path)
 ;; (require 'autopair)
@@ -139,8 +141,8 @@
 
 ;; (require 'python-skeleton)
 
-(push "~/packages/git/rust-mode/" load-path)
-(require 'rust-mode)
+;; (push "~/packages/git/rust-mode/" load-path)
+;; (require 'rust-mode)
 
 ;;(require 'haskell-mode-autoloads)
 
@@ -187,9 +189,9 @@
 ;;   "Prevent annoying \"Active processes exist\" query when you quit Emacs."
 ;;   (flet ((process-list ())) ad-do-it))
 
-(require 'exit-saver)
-
 (require 'sexpfun)
+
+(load "~/quicklisp/slime-helper.el")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
