@@ -89,11 +89,15 @@
 
 (setq undo-limit 800000)
 
-(setq auto-mode-alist (append
-		       '(("\.lua$" . lua-mode)
-                         ("\.hs$" . haskell-mode)
-			 ("\.hish$" . html-mode))
-		       auto-mode-alist))
+(require 'assoc-add)
+(setq auto-mode-alist
+      (assoc-union
+       (proper-alist
+        auto-mode-alist)
+       (proper-alist
+        '(("\.lua$" . lua-mode)
+          ("\.hs$" . haskell-mode)
+          ("\.hish$" . html-mode)))))
 (autoload 'lua-mode "lua-mode" "Lua Editing mode." t)
 
 (require 'gitcommit)

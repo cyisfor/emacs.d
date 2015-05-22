@@ -1,3 +1,4 @@
+; -*- mode: Lisp; lexical-binding: t -*-
 
 (require 'types)
 (require 'assoc-add)
@@ -44,7 +45,7 @@
 (require 'cl) ; for flet
 
 (defun html-shortcuts ()
-  (when (eq translated-demon nil)
+  (when (eq translated-daemon nil)
     ;; http://stackoverflow.com/a/4513683
     (when (display-graphic-p)
       (keyboard-translate ?\C-i ?\H-i))
