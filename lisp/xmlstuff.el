@@ -1,7 +1,7 @@
 ; -*- mode: Lisp; lexical-binding: t -*-
 
 (require 'types)
-(require 'assoc-add)
+(require 'hash-table-stuff)
 
 ;(add-hook 'html-mode-hook (lambda () (electric-indent-local-mode -1)))
 
@@ -11,9 +11,10 @@
   (electric-indent-local-mode -1)
   (print (list 'eeemem electric-indent-mode)))
  
-(setq auto-mode-alist (assoc-add 
-		       '("\.hish$" . hish-mode)
-		       auto-mode-alist))
+(setq auto-mode-alist
+      (alist-uniquify
+       (cons '("\.hish$" . hish-mode)
+             auto-mode-alist)))
 
 (setq htmly-types '(sgml html xml nxml text hish))
 (setq edity-types (append htmly-types edity-types))

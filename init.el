@@ -89,15 +89,18 @@
 
 (setq undo-limit 800000)
 
-(require 'assoc-add)
+(require 'hash-table-stuff)
 (setq auto-mode-alist
-      (assoc-union
-       (proper-alist
-        auto-mode-alist)
-       (proper-alist
-        '(("\.lua$" . lua-mode)
-          ("\.hs$" . haskell-mode)
-          ("\.hish$" . html-mode)))))
+      (alist-uniquify
+       `(("\.lua$" . lua-mode)
+         ("\.hs$" . haskell-mode)
+         ("\.hish$" . html-mode)
+         ("\\.go\\'" . gofmt-mode)
+         ("\\.cr$" . ruby-mode)
+         ("\\.\\(frm\\|vbs\\|bas\\|cls\\)$" .
+          visual-basic-mode)
+         ,@auto-mode-alist)))
+
 (autoload 'lua-mode "lua-mode" "Lua Editing mode." t)
 
 (require 'gitcommit)
@@ -131,6 +134,8 @@
 
 (require 'package-require)
 
+;(package-require 'geiser)
+
 (package-require 'yasnippet)
 (yas-global-mode 1)
 
@@ -159,8 +164,6 @@
 ;;(add-hook 'haskell-mode-hook 'quail-activate)
 
 (autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
-(setq auto-mode-alist (append '(("\\.\\(frm\\|vbs\\|bas\\|cls\\)$" .
-                                 visual-basic-mode)) auto-mode-alist))
 
 ;; (load "~/packages/git/lyqi/lyqi")
 ;; (setq auto-mode-alist (append
@@ -179,12 +182,12 @@
   (interactive)
   (add-hook 'before-save-hook 'cancellable-gofmt-before-save nil t)
   (go-mode))
-(add-to-list 'auto-mode-alist (cons "\\.go\\'" 'gofmt-mode)) 
 
-(push "~/packages/git/slime" load-path)
-(require 'slime-autoloads)
-(setq slime-lisp-implementations
-      '((sbcl ("sbcl" "--core" "/extra/user/packages/git/slime/sbcl.core-for-slime"))))
+
+;; (push "~/packages/git/slime" load-path)
+;; (require 'slime-autoloads)
+;; (setq slime-lisp-implementations
+;;       '((sbcl ("sbcl" "--core" "/extra/user/packages/git/slime/sbcl.core-for-slime"))))
 
 ;; (setq inferior-lisp-program "/usr/bin/sbcl")
 ;; (setq slime-contribs '(slime-fancy))
@@ -195,7 +198,20 @@
 
 (require 'sexpfun)
 
-(load "~/quicklisp/slime-helper.el")
+(defun my-add-pretty-lambda ()
+  "make some word or string show as pretty Unicode symbols"
+  (setq prettify-symbols-alist
+        '(
+          ("lambda" . 955) ; λ
+          ("->" . 8594)    ; →
+          ("=>" . 8658)    ; ⇒
+          ("map" . 8614)   ; ↦
+          ))
+  (prettify-symbols-mode 1))
+
+(add-hook 'scheme-mode-hook 'my-add-pretty-lambda)
+
+;; (load "~/quicklisp/slime-helper.el")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -218,6 +234,7 @@
  '(py-electric-colon-active-p t)
  '(py-electric-colon-greedy-p t)
  '(safe-local-variable-values (quote ((encoding . utf8))))
+ '(scheme-program-name "csi -:c")
  '(slime-auto-start (quote always))
  '(tab-width 4)
  '(track-eol t)
@@ -227,7 +244,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "DejaVu Sans Mono" :foundry "unknown" :slant normal :weight normal :height 143 :width normal))))
+ '(default ((t (:family "DejaVu Serif" :foundry "unknown" :slant normal :weight normal :height 143 :width normal))))
  '(py-decorators-face ((t (:inherit font-lock-keyword-face :foreground "orange"))))
  '(py-def-class-face ((t (:inherit font-lock-keyword-face :foreground "hot pink"))))
  '(py-exception-name-face ((t (:inherit font-lock-builtin-face :weight bold))))
