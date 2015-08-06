@@ -97,6 +97,7 @@
 		       auto-mode-alist))
 (autoload 'lua-mode "lua-mode" "Lua Editing mode." t)
 
+(require 'xmlstuff)
 (require 'gitcommit)
 
 (setq buffer-face-mode-face '(:family "Bitstream Vera Sans Mono" :height 140 :width semi-expanded))

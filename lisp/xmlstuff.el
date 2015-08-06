@@ -19,10 +19,10 @@
 (setq htmly-types '(sgml html xml nxml text hish))
 (setq edity-types (append htmly-types edity-types))
 
-; strike out is ctrl-p? meh...
-
+;; strike out is ctrl-p? meh...
+;; leave ctrl-e as <i> for /emphasis/ also ctrl-i sucks
 (setq mappings
-      '(i b u (p . s) p (l . li)))
+      '(i (e . i) b u (p . s) p (l . li)))
 
 (setq mappings-memo nil)
 
