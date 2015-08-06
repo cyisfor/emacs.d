@@ -165,17 +165,19 @@
 ;;                          ("\\.ily$" . lyqi-mode))
 ;;                        auto-mode-alist))
 
-(push "~/packages/git/go-mode.el/" load-path)
-(require 'go-mode-autoloads)
-(defun cancellable-gofmt-before-save ()
-  (interactive)
-  (condition-case nil
-      (gofmt-before-save)
-      (quit nil)))
-(defun gofmt-mode ()
-  (interactive)
-  (add-hook 'before-save-hook 'cancellable-gofmt-before-save nil t)
-  (go-mode))
+(if-load "~/packages/git/go-mode.el/"
+         (require 'go-mode-autoloads)
+         (defun cancellable-gofmt-before-save ()
+           (interactive)
+           (condition-case nil
+               (gofmt-before-save)
+             (quit nil)))
+         (defun gofmt-mode ()
+           (interactive)
+           (add-hook 'before-save-hook 'cancellable-gofmt-before-save nil t)
+           (go-mode))
+
+         (push '("\\.go$" . gofmt-mode) auto-mode-alist))
 
 
 ;; (push "~/packages/git/slime" load-path)
