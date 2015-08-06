@@ -52,6 +52,7 @@
 
 (setq auto-mode-alist (append
 		       '(("\.lua$" . lua-mode)
+			 ("\.md$" . html-mode)
 			 ("\.hish$" . html-mode))
 		       auto-mode-alist))
 (autoload 'lua-mode "lua-mode" "Lua Editing mode." t)
