@@ -9,12 +9,14 @@
 ;; in your clipboard manager. This turns one copy of a lot of C-k's into a dozen clipboard entries,
 ;; filling up my clipboard history.
 
-;; So instead, just wait 2s before considering a kill ring append worthy of making a new clipboard
+;; So instead, just wait 1s before considering a kill ring append worthy of making a new clipboard
 ;; entry.
 ;; New kills will cancel this timer and immediately copy to clipboard, so this only changes
 ;; kill-append, i.e. C-k repeatedly, or the like.
 
 ;; ...still need to override kill-new to cancel that timer though.
+
+(defvar clipboard-commit-delay "1 sec")
 
 (require 'cl)
 
@@ -43,7 +45,7 @@
                   ;; just reset the timer and kill
                   (my-kill-new
                    (lambda (old-kill-new something &optional replace)
-                     "kill, then copy to X clipboard in about 2 seconds of idleness"
+                     "kill, then copy to X clipboard in about 1 seconds of idleness"
                      
                      (when (eq replace nil)
                        ;; a new kill is ready to happen, so x-select the old one first
@@ -55,7 +57,7 @@
                      ;; we have to save the pending selection ourselves, because we may need
                      ;; to copy it to the clipboard, during advice before (current-kill)
                      (setq pending-selection something)
-                     (setq timer (run-at-time "2 sec" nil select-it))))
+                     (setq timer (run-at-time clipboard-commit-delay nil select-it))))
                   (pop-on-current-kill
                    (lambda (n &optional do-not-move)
                      "flush pending X copy operation"

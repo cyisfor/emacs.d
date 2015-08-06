@@ -1,5 +1,5 @@
-(setq edity-types '(text))
-(setq programmy-types '(c python lisp lua perl java javascript))
+(setq edity-types '(html markdown text xml))
+(setq programmy-types '(c go java javascript lisp lisp lua perl python d nim))
 (defun type->hook (type)
   (intern (concat (symbol-name type) "-mode-hook")))
 (provide 'types)
