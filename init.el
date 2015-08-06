@@ -166,6 +166,11 @@
 ;;                          ("\\.ily$" . lyqi-mode))
 ;;                        auto-mode-alist))
 
+(defmacro if-load (p &rest block) (declare (indent defun))
+          `(when (file-directory-p ,p)
+             (push ,p load-path)
+             ,@block))
+
 (if-load "~/packages/git/go-mode.el/"
          (require 'go-mode-autoloads)
          (defun cancellable-gofmt-before-save ()
