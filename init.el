@@ -14,6 +14,7 @@
 
 (global-set-key (kbd "M-<right>") 'forward-list)
 (global-set-key (kbd "M-<left>") 'backward-list)
+(global-set-key (kbd "M-<up>") 'up-list)
 (global-set-key (kbd "C-k") 'kill-visual-line-or-region)
 (global-set-key (kbd "C-w") 'delete-other-windows)
 (global-set-key (kbd "M-l") 'redraw-display)
@@ -253,4 +254,5 @@
  '(py-object-reference-face ((t (:inherit py-pseudo-keyword-face :foreground "blue"))))
  '(py-pseudo-keyword-face ((t (:inherit font-lock-keyword-face :foreground "lime green"))))
  '(py-try-if-face ((t (:inherit font-lock-keyword-face :weight bold))))
- '(py-variable-name-face ((t (:inherit default :foreground "light sea green")))))
+ '(py-variable-name-face ((t (:inherit default :foreground "light sea green"))))
+ '(whitespace-line ((t (:background "light gray" :foreground "dark magenta")))))
