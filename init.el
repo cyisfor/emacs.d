@@ -39,8 +39,13 @@
 
 (require 'exit-saver)
 
-(push "~/packages/bzr/python-mode/" load-path)
-(require 'python-mode)
+(defmacro if-load (p &rest block) (declare (indent defun))
+          `(when (file-directory-p ,p)
+             (push ,p load-path)
+             ,@block))
+
+(if-load "~/packages/bzr/python-mode"
+         (require 'python-mode))
 (require 'types)
 
 (dolist (type programmy-types)
@@ -165,11 +170,6 @@
 ;;                        '(("\\.ly$" . lyqi-mode)
 ;;                          ("\\.ily$" . lyqi-mode))
 ;;                        auto-mode-alist))
-
-(defmacro if-load (p &rest block) (declare (indent defun))
-          `(when (file-directory-p ,p)
-             (push ,p load-path)
-             ,@block))
 
 (if-load "~/packages/git/go-mode.el/"
          (require 'go-mode-autoloads)
