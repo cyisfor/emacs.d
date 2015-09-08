@@ -1,5 +1,5 @@
-(when (file-exists-p "~/.emacs.d/init.elc")
-  (delete-file "~/.emacs.d/init.elc"))
+(when (file-exists-p "~user/.emacs.d/init.elc")
+  (delete-file "~user/.emacs.d/init.elc"))
 
 (global-set-key (kbd "C-z") ctl-x-map)
 (global-set-key (kbd "M-z") 'execute-extended-command)
@@ -34,8 +34,8 @@
 
 (global-set-key "\C-co" 'switch-to-minibuffer) ;; Bind to `C-c o'
 
-(push "~/.emacs.d/lisp" load-path)
-(byte-recompile-directory (expand-file-name "~/.emacs.d/lisp"))
+(push "~user/.emacs.d/lisp" load-path)
+(byte-recompile-directory (expand-file-name "~user/.emacs.d/lisp"))
 
 (require 'exit-saver)
 
@@ -44,7 +44,7 @@
              (push ,p load-path)
              ,@block))
 
-(if-load "~/packages/bzr/python-mode"
+(if-load "~user/packages/bzr/python-mode"
          (require 'python-mode))
 (require 'types)
 
@@ -83,13 +83,13 @@
 			  (subst-char-in-string ?/ ?-
 						(base64-encode-string s))))
 
-(if (not (file-exists-p "~/.emacs.d/undo-history")) (make-directory "~/.emacs.d/undo-history/"))
+(if (not (file-exists-p "~user/.emacs.d/undo-history")) (make-directory "~user/.emacs.d/undo-history/"))
 (defadvice undo-tree-make-history-save-file-name
     (after undo-tree activate)
-  (setq ad-return-value (concat "~/.emacs.d/undo-history/"
+  (setq ad-return-value (concat "~user/.emacs.d/undo-history/"
 				(substring
 					   (bonglify ad-return-value)
-					   (+ 3 (string-bytes "~/.emacs.d/undo-history/")))
+					   (+ 3 (string-bytes "~user/.emacs.d/undo-history/")))
 				".gz")))
 (setq undo-tree-auto-save-history t)
 
@@ -142,7 +142,7 @@
 (require 'xmlstuff)
 (package-require 'bookmark+)
 
-;; (push "~/packages/git/autopair/" load-path)
+;; (push "~user/packages/git/autopair/" load-path)
 ;; (require 'autopair)
 ;; (dolist (type programmy-types)
 ;;          (add-hook (type->hook type)
@@ -150,7 +150,7 @@
 
 ;; (require 'python-skeleton)
 
-;; (push "~/packages/git/rust-mode/" load-path)
+;; (push "~user/packages/git/rust-mode/" load-path)
 ;; (require 'rust-mode)
 
 ;;(require 'haskell-mode-autoloads)
@@ -158,20 +158,23 @@
 ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
 ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 
-;;(push "~/packages/git/emacs-haskell-unicode-input-method" load-path)
+;;(push "~user/packages/git/emacs-haskell-unicode-input-method" load-path)
 ;;(require 'haskell-unicode-input-method)
 
 ;;(add-hook 'haskell-mode-hook 'quail-activate)
 
 (autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
 
-;; (load "~/packages/git/lyqi/lyqi")
+;; (load "~user/packages/git/lyqi/lyqi")
 ;; (setq auto-mode-alist (append
 ;;                        '(("\\.ly$" . lyqi-mode)
 ;;                          ("\\.ily$" . lyqi-mode))
 ;;                        auto-mode-alist))
 
-(if-load "~/packages/git/go-mode.el/"
+(if-load "~user/packages/git/nim-mode"
+  (require 'nim-mode))
+
+(if-load "~user/packages/git/go-mode.el/"
          (require 'go-mode-autoloads)
          (defun cancellable-gofmt-before-save ()
            (interactive)
@@ -186,7 +189,7 @@
          (push '("\\.go$" . gofmt-mode) auto-mode-alist))
 
 
-;; (push "~/packages/git/slime" load-path)
+;; (push "~user/packages/git/slime" load-path)
 ;; (require 'slime-autoloads)
 ;; (setq slime-lisp-implementations
 ;;       '((sbcl ("sbcl" "--core" "/extra/user/packages/git/slime/sbcl.core-for-slime"))))
@@ -213,7 +216,7 @@
 
 (add-hook 'scheme-mode-hook 'my-add-pretty-lambda)
 
-;; (load "~/quicklisp/slime-helper.el")
+;; (load "~user/quicklisp/slime-helper.el")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
