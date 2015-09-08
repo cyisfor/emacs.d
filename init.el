@@ -1,5 +1,5 @@
-(when (file-exists-p "~user/.emacs.d/init.elc")
-  (delete-file "~user/.emacs.d/init.elc"))
+(when (file-exists-p "~/.emacs.d/init.elc")
+  (delete-file "~/.emacs.d/init.elc"))
 
 (global-set-key (kbd "C-z") ctl-x-map)
 (global-set-key (kbd "M-z") 'execute-extended-command)
@@ -34,8 +34,8 @@
 
 (global-set-key "\C-co" 'switch-to-minibuffer) ;; Bind to `C-c o'
 
-(push "~user/.emacs.d/lisp" load-path)
-(byte-recompile-directory (expand-file-name "~user/.emacs.d/lisp"))
+(push "~/.emacs.d/lisp" load-path)
+(byte-recompile-directory (expand-file-name "~/.emacs.d/lisp"))
 
 (require 'exit-saver)
 
@@ -83,13 +83,13 @@
 			  (subst-char-in-string ?/ ?-
 						(base64-encode-string s))))
 
-(if (not (file-exists-p "~user/.emacs.d/undo-history")) (make-directory "~user/.emacs.d/undo-history/"))
+(if (not (file-exists-p "~/.emacs.d/undo-history")) (make-directory "~/.emacs.d/undo-history/"))
 (defadvice undo-tree-make-history-save-file-name
     (after undo-tree activate)
-  (setq ad-return-value (concat "~user/.emacs.d/undo-history/"
+  (setq ad-return-value (concat "~/.emacs.d/undo-history/"
 				(substring
 					   (bonglify ad-return-value)
-					   (+ 3 (string-bytes "~user/.emacs.d/undo-history/")))
+					   (+ 3 (string-bytes "~/.emacs.d/undo-history/")))
 				".gz")))
 (setq undo-tree-auto-save-history t)
 
