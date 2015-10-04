@@ -37,6 +37,7 @@
 (push "~/.emacs.d/lisp" load-path)
 (byte-recompile-directory (expand-file-name "~/.emacs.d/lisp"))
 
+(require 'show-point-mode)
 (require 'exit-saver)
 
 (defmacro if-load (p &rest block) (declare (indent defun))
@@ -44,8 +45,18 @@
              (push ,p load-path)
              ,@block))
 
-(if-load "~user/packages/bzr/python-mode"
-         (require 'python-mode))
+(require 'package-require)
+
+;; (if-load "~user/packages/bzr/components-python-mode"
+;;          (require 'python-components-mode))
+
+;; Make absolutely sure python-mode uses tabs
+;; thanks mk-fg
+(add-hook 'python-mode-hook
+	#'(lambda () (setq tab-width 2 indent-tabs-mode t)))
+(package-require 'smart-tabs-mode)
+(smart-tabs-insinuate 'python)
+
 (require 'types)
 
 (dolist (type programmy-types)
@@ -132,7 +143,7 @@
 ;; 			 ("\\.l$" . flex-mode))
 ;; 		       auto-mode-alist))
 
-(require 'package-require)
+(require 'c-stuff)
 
 ;(package-require 'geiser)
 
@@ -172,6 +183,7 @@
 ;;                        auto-mode-alist))
 
 (if-load "~user/packages/git/nim-mode"
+;;(if-load "~user/code/"
   (require 'nim-mode))
 
 (if-load "~user/packages/git/go-mode.el/"
@@ -230,7 +242,7 @@
  '(global-visual-line-mode t)
  '(gofmt-command "goimports")
  '(ibuffer-always-compile-formats t)
- '(indent-tabs-mode nil)
+ '(indent-tabs-mode t)
  '(inhibit-startup-screen t)
  '(kill-whole-line t)
  '(max-specpdl-size 3000)

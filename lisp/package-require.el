@@ -13,6 +13,7 @@
   `(condition-case nil (require ,package)
      (error
       (progn
+        (message "Not found %s" (list 'installing (quote ,package)))
         (condition-case nil
 	    (package-install ,package)
 	  (error
