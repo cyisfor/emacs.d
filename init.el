@@ -106,12 +106,25 @@
 
 (setq undo-limit 800000)
 
+(cl-macrolet ((insertit (what)
+						`(lambda ()
+						   (interactive)
+						   (insert ,what))))
+  (defun for-cool-schemes-only ()
+	(local-set-key (kbd "C-\\") (insertit "λ")))
+  (global-set-key (kbd "C-\\") (insertit "lambda")))
+
 (setq auto-mode-alist (append
 		       '(("\.lua$" . lua-mode)
 			 ("\.md$" . html-mode)
 			 ("\.hish$" . html-mode)
-			 ("\.rkt$" . scheme-mode))
+			 ("\.rkt$" . (lambda ()
+						   (scheme-mode)
+						   (for-cool-schemes-only))))
 		       auto-mode-alist))
+
+
+
 (autoload 'lua-mode "lua-mode" "Lua Editing mode." t)
 
 (require 'xmlstuff)
