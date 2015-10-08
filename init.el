@@ -40,6 +40,8 @@
 (require 'show-point-mode)
 (require 'exit-saver)
 
+(global-set-key (kbd "<f5>") 'save-buffers)
+
 (defmacro if-load (p &rest block) (declare (indent defun))
           `(when (file-directory-p ,p)
              (push ,p load-path)
