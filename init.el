@@ -6,16 +6,18 @@
 (global-set-key (kbd "M-k") 'zap-to-char) ; more useful than kill-sentence
 ;; could set M-x to kill-sentence to complete the circle, meh
 
-(defun kill-visual-line-or-region (beg end &optional region direction)
+(defun kill-whole-line-or-region (beg end &optional region direction)
   (interactive (list (mark) (point) 'region) "P")
   (if (region-active-p)
       (kill-region beg end region)
-    (kill-visual-line direction)))
+    (if (= (point) (line-end-position))
+		(kill-line)
+	  (kill-region (point) (line-end-position)))))
 
 (global-set-key (kbd "M-<right>") 'forward-list)
 (global-set-key (kbd "M-<left>") 'backward-list)
 (global-set-key (kbd "M-<up>") 'up-list)
-(global-set-key (kbd "C-k") 'kill-visual-line-or-region)
+(global-set-key (kbd "C-k") 'kill-whole-line-or-region)
 (global-set-key (kbd "C-w") 'delete-other-windows)
 (global-set-key (kbd "M-l") 'redraw-display)
 (global-set-key (kbd "C-l") 'goto-line)
@@ -266,6 +268,7 @@
  '(py-complete-function (lambda (&rest args) nil))
  '(py-electric-colon-active-p t)
  '(py-electric-colon-greedy-p t)
+ '(python-indent-offset 1)
  '(safe-local-variable-values (quote ((encoding . utf8))))
  '(scheme-program-name "csi -:c")
  '(slime-auto-start (quote always))

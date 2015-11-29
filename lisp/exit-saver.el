@@ -3,7 +3,7 @@
   (dolist (buffer (buffer-list))
     (when (buffer-modified-p buffer)
       (with-current-buffer buffer
-        (when (not (eq nil buffer-file-number))
+        (when (not (eq nil buffer-file-name))
           ;; has a file, file is modified
           (save-buffer))))))
 
