@@ -27,6 +27,15 @@
 (global-set-key (kbd "C-g") 'abort-recursive-edit)
 (global-set-key (kbd "C-]") 'keyboard-quit)
 
+(dolist (type '(
+				backward-kill-sentence
+				set-goal-column
+				))
+  (substitute-key-definition
+   type
+   'abort-recursive-edit
+   (current-global-map)))
+
 (defun switch-to-minibuffer ()
   "Switch to minibuffer window."
   (interactive)
@@ -56,10 +65,18 @@
 
 ;; Make absolutely sure python-mode uses tabs
 ;; thanks mk-fg
+(defun do-smart-tabs ()
+	(if (eq? t do-smart-tabs)
+		nil
+	  (progn
+		(setq do-smart-tabs t)
+		(package-require 'smart-tabs-mode)
+		(smart-tabs-insinuate 'python))))
+
 (add-hook 'python-mode-hook
-	#'(lambda () (setq tab-width 2 indent-tabs-mode t)))
-(package-require 'smart-tabs-mode)
-(smart-tabs-insinuate 'python)
+		  #'(lambda ()
+			  (setq tab-width 2 indent-tabs-mode t)
+			  (do-smart-tabs)))
 
 (require 'types)
 
@@ -68,47 +85,55 @@
                    (if (eq type 'c)
                        '(lambda ()
                           (local-set-key (kbd "<return>") 'c-indent-new-comment-line)
-                          (local-set-key (kbd "C-<return>") 'newline))
-                          (local-set-key (kbd "M-<return>") 'electric-indent-just-newline))
+                          (local-set-key (kbd "C-<return>") 'newline)
+						  ;;(local-set-key (kbd "M-<return>") 'electric-indent-just-newline))
                      '(lambda ()
                         (local-set-key (kbd "<return>") 'newline-and-indent)
                         (local-set-key (kbd "C-<return>") 'newline)
-                        (local-set-key (kbd "M-<return>") 'electric-indent-just-newline))))
-                                        
+                        ;;(local-set-key (kbd "M-<return>") 'electric-indent-just-newline))))
+(electric-indent-mode -1)
 (savehist-mode 1)
 ;(require 'savekill)
 (require 'lazyclipboard)
 
-(require 'quote-display)
-(global-set-key (kbd "M-q") 'toggle-hide-outside-quotes)
+;;(require 'quote-display)
+;;(global-set-key (kbd "M-q") 'toggle-hide-outside-quotes)
 
-(require 'undo-tree)
-(global-undo-tree-mode)
-(delete-selection-mode 1)
+(defmacro when-require (what &rest body)
+	`(if (member ,what features)
+		 nil
+	   (progn
+		 (require ,what)
+		 ,@body)))
 
-(defun count-words-so-far (&rest args)
-  (interactive)
-  (message "Buffer has %S lines %S words, and %S characters (so far)"
-	    (count-lines 1 (point))
-	    (count-words 1 (point))
-	    (point)))
+(when-require
+ 'undo-tree
+ (global-undo-tree-mode)
+ (delete-selection-mode 1)
 
-(defun bonglify (s)
-    (subst-char-in-string ?+ ?_
-			  (subst-char-in-string ?/ ?-
+ (defun count-words-so-far (&rest args)
+   (interactive)
+   (message "Buffer has %S lines %S words, and %S characters (so far)"
+			(count-lines 1 (point))
+			(count-words 1 (point))
+			(point)))
+ 
+ (defun bonglify (s)
+   (subst-char-in-string ?+ ?_
+						 (subst-char-in-string ?/ ?-
 						(base64-encode-string s))))
-
-(if (not (file-exists-p "~/.emacs.d/undo-history")) (make-directory "~/.emacs.d/undo-history/"))
-(defadvice undo-tree-make-history-save-file-name
-    (after undo-tree activate)
-  (setq ad-return-value (concat "~/.emacs.d/undo-history/"
-				(substring
-					   (bonglify ad-return-value)
+ 
+ (if (not (file-exists-p "~/.emacs.d/undo-history")) (make-directory "~/.emacs.d/undo-history/"))
+ (defadvice undo-tree-make-history-save-file-name
+	 (after undo-tree activate)
+   ((setq ad-return-value (concat "~/.emacs.d/undo-history/"
+										(substring
+					   (bonglify (and )d-return-value)
 					   (+ 3 (string-bytes "~/.emacs.d/undo-history/")))
-				".gz")))
-(setq undo-tree-auto-save-history t)
-
-(setq undo-limit 800000)
+										".gz")))
+ (setq undo-tree-auto-save-history t)
+ 
+ (setq undo-limit 800000)))
 
 (cl-macrolet ((insertit (what)
 						`(lambda ()
@@ -120,14 +145,14 @@
 
 (setq auto-mode-alist (append
 		       '(("\.lua$" . lua-mode)
-			 ("\.md$" . html-mode)
-			 ("\.hish$" . html-mode)
-			 ("\.rkt$" . (lambda ()
-						   (scheme-mode)
-						   (for-cool-schemes-only))))
+				 ("\.md$" . html-mode)
+				 ("\.hish$" . html-mode)
+				 ("\.rkt$" . (lambda ()
+							   (racket-mode)
+							   (for-cool-schemes-only))))
 		       auto-mode-alist))
 
-
+(require 'htmlfixes)
 
 (autoload 'lua-mode "lua-mode" "Lua Editing mode." t)
 
@@ -161,14 +186,28 @@
 ;; 			 ("\\.l$" . flex-mode))
 ;; 		       auto-mode-alist))
 
-(require 'c-stuff)
+(defun herp-derp-emacs-sucks ()
+  (require 'c-stuff))
+
+(add-hook 'c++-mode
+		  'herp-derp-emacs-sucks)
+(add-hook 'c-mode
+		  'herp-derp-emacs-sucks)
 
 ;(package-require 'geiser)
 
-(package-require 'yasnippet)
-(yas-global-mode 1)
+(defun setup-yas ()
+	(interactive)
+  (package-require 'yasnippet)
+  (yas-minor-mode 1))
+(dolist (type programmy-types)
+  (add-hook (type->hook type)
+			'setup-yas))
 
-(require 'xmlstuff)
+(dolist (type edity-types)
+  (add-hook (type->hook type)
+			#'(lambda ()
+				(require 'xmlstuff))))
 (package-require 'bookmark+)
 
 ;; (push "~user/packages/git/autopair/" load-path)
@@ -245,6 +284,18 @@
   (prettify-symbols-mode 1))
 
 (add-hook 'scheme-mode-hook 'my-add-pretty-lambda)
+(add-hook 'racket-mode-hook 'my-add-pretty-lambda)
+
+(defun sort-words (reverse beg end)
+  "Sort words in region alphabetically, in REVERSE if negative.
+    Prefixed with negative \\[universal-argument], sorts in reverse.
+  
+    The variable `sort-fold-case' determines whether alphabetic case
+    affects the sort order.
+  
+    See `sort-regexp-fields'."
+  (interactive "*P\nr")
+  (sort-regexp-fields reverse "[_[:word:]-]+" "\\&" beg end))
 
 ;; (load "~user/quicklisp/slime-helper.el")
 
@@ -291,3 +342,4 @@
  '(py-try-if-face ((t (:inherit font-lock-keyword-face :weight bold))))
  '(py-variable-name-face ((t (:inherit default :foreground "light sea green"))))
  '(whitespace-line ((t (:background "light gray" :foreground "dark magenta")))))
+(put 'upcase-region 'disabled nil)
