@@ -60,22 +60,34 @@
 
 (require 'package-require)
 
+(if-load "~user/packages/git/lua-mode/"
+  (require 'lua-mode))
+
 ;; (if-load "~user/packages/bzr/components-python-mode"
 ;;          (require 'python-components-mode))
+
+(defmacro when-require (what &rest body)
+	`(if (member ,what features)
+		 nil
+	   (progn
+		 (require ,what)
+		 ,@body)))
+
+
 
 ;; Make absolutely sure python-mode uses tabs
 ;; thanks mk-fg
 (defun do-smart-tabs ()
-	(if (eq? t do-smart-tabs)
-		nil
-	  (progn
-		(setq do-smart-tabs t)
-		(package-require 'smart-tabs-mode)
-		(smart-tabs-insinuate 'python))))
+  (when-require 'smart-tabs-mode
+				(setq do-smart-tabs t)
+				(smart-tabs-insinuate 'python)))
 
 (add-hook 'python-mode-hook
-		  #'(lambda ()
-			  (setq tab-width 2 indent-tabs-mode t)
+		  #'(lambda ()			  
+			  (setq tab-width 2
+					indent-tabs-mode t
+					python-indent-offset 2
+					py-indent-tabs-mode t)
 			  (do-smart-tabs)))
 
 (require 'types)
@@ -86,11 +98,13 @@
                        '(lambda ()
                           (local-set-key (kbd "<return>") 'c-indent-new-comment-line)
                           (local-set-key (kbd "C-<return>") 'newline)
-						  ;;(local-set-key (kbd "M-<return>") 'electric-indent-just-newline))
+						  (local-set-key (kbd "M-<return>") 'electric-indent-just-newline)
+			  )
                      '(lambda ()
                         (local-set-key (kbd "<return>") 'newline-and-indent)
                         (local-set-key (kbd "C-<return>") 'newline)
-                        ;;(local-set-key (kbd "M-<return>") 'electric-indent-just-newline))))
+                        (local-set-key (kbd "M-<return>") 'electric-indent-just-newline)
+			))))
 (electric-indent-mode -1)
 (savehist-mode 1)
 ;(require 'savekill)
@@ -98,13 +112,6 @@
 
 ;;(require 'quote-display)
 ;;(global-set-key (kbd "M-q") 'toggle-hide-outside-quotes)
-
-(defmacro when-require (what &rest body)
-	`(if (member ,what features)
-		 nil
-	   (progn
-		 (require ,what)
-		 ,@body)))
 
 (when-require
  'undo-tree
@@ -197,9 +204,12 @@
 ;(package-require 'geiser)
 
 (defun setup-yas ()
-	(interactive)
-  (package-require 'yasnippet)
-  (yas-minor-mode 1))
+  (interactive)
+  (when-require 'yasnippet
+				(yas-reload-all))
+  (yas-minor-mode 1)
+  (yas-minor-mode-on))
+
 (dolist (type programmy-types)
   (add-hook (type->hook type)
 			'setup-yas))
@@ -266,9 +276,9 @@
 ;; (setq inferior-lisp-program "/usr/bin/sbcl")
 ;; (setq slime-contribs '(slime-fancy))
 
-;; (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
-;;   "Prevent annoying \"Active processes exist\" query when you quit Emacs."
-;;   (flet ((process-list ())) ad-do-it))
+(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+  "Prevent annoying \"Active processes exist\" query when you quit Emacs."
+  (flet ((process-list ())) ad-do-it))
 
 (require 'sexpfun)
 
@@ -297,6 +307,9 @@
   (interactive "*P\nr")
   (sort-regexp-fields reverse "[_[:word:]-]+" "\\&" beg end))
 
+(line-number-mode 1)
+(column-number-mode 1)
+(global-linum-mode -1)
 ;; (load "~user/quicklisp/slime-helper.el")
 
 (custom-set-variables
@@ -322,6 +335,7 @@
  '(python-indent-offset 1)
  '(safe-local-variable-values (quote ((encoding . utf8))))
  '(scheme-program-name "csi -:c")
+ '(sgml-xml-mode t)
  '(slime-auto-start (quote always))
  '(tab-width 4)
  '(track-eol t)
