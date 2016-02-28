@@ -1,6 +1,7 @@
 (defun fix-html-mode ()
   (interactive)
-  (setq sgml-unclosed-tags nil)
+  (setq-local sgml-unclosed-tags nil)
+  (setq-local sgml-xml-mode t)
   (message "yas offing")
   (yas-minor-mode -1)  
   (setcdr (assoc "code" html-tag-alist) '(nil)))
