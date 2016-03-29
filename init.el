@@ -6,6 +6,8 @@
 (global-set-key (kbd "M-k") 'zap-to-char) ; more useful than kill-sentence
 ;; could set M-x to kill-sentence to complete the circle, meh
 
+(define-key ctl-x-map (kbd "C-b") 'ibuffer)
+
 (defun kill-whole-line-or-region (beg end &optional region direction)
   (interactive (list (mark) (point) 'region) "P")
   (if (region-active-p)
@@ -47,6 +49,16 @@
 
 (push "~/.emacs.d/lisp" load-path)
 (byte-recompile-directory (expand-file-name "~/.emacs.d/lisp"))
+
+(push "/extra/home/packages/git/emacswiki.org" load-path)
+(require 'apropos-fn+var)
+(require 'icomplete+)
+(require 'mb-depth+)
+(pop load-path)
+
+;(require 'ido-fixes)
+
+(require 'nostupidbackups)
 
 (require 'show-point-mode)
 (require 'exit-saver)
@@ -312,6 +324,8 @@
 (global-linum-mode -1)
 ;; (load "~user/quicklisp/slime-helper.el")
 
+(icy-mode 1)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -324,6 +338,9 @@
  '(global-visual-line-mode t)
  '(gofmt-command "goimports")
  '(ibuffer-always-compile-formats t)
+ '(icicle-modal-cycle-down-action-keys (quote ([nil (control mouse-5)] [(control mouse-5)])))
+ '(icicle-modal-cycle-down-keys (quote ([control down] [nil mouse-5] [mouse-5])))
+ '(icicle-modal-cycle-up-keys (quote ([control up] [nil mouse-4] [mouse-4])))
  '(indent-tabs-mode t)
  '(inhibit-startup-screen t)
  '(kill-whole-line t)
