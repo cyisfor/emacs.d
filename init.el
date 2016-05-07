@@ -50,12 +50,16 @@
 (push "~/.emacs.d/lisp" load-path)
 (byte-recompile-directory (expand-file-name "~/.emacs.d/lisp"))
 
+(require 'frame-bufs)
+
 (push "/extra/home/packages/git/emacswiki.org" load-path)
 (require 'apropos-fn+var)
 (require 'icomplete+)
 (require 'mb-depth+)
 (pop load-path)
-
+(push "/extra/home/packages/git/xah-replace-pairs" load-path)
+(require 'curlify-quotes) ;; in load thou
+(pop load-path)
 ;(require 'ido-fixes)
 
 (require 'nostupidbackups)
@@ -64,6 +68,9 @@
 (require 'exit-saver)
 
 (global-set-key (kbd "<f5>") 'save-buffers)
+;;; auggggggh
+(define-key ctl-x-map [(s)] 'save-buffers)
+
 
 (defmacro if-load (p &rest block) (declare (indent defun))
           `(when (file-directory-p ,p)
@@ -106,17 +113,12 @@
 
 (dolist (type programmy-types)
          (add-hook (type->hook type)
-                   (if (eq type 'c)
-                       '(lambda ()
-                          (local-set-key (kbd "<return>") 'c-indent-new-comment-line)
-                          (local-set-key (kbd "C-<return>") 'newline)
-						  (local-set-key (kbd "M-<return>") 'electric-indent-just-newline)
-			  )
                      '(lambda ()
                         (local-set-key (kbd "<return>") 'newline-and-indent)
                         (local-set-key (kbd "C-<return>") 'newline)
-                        (local-set-key (kbd "M-<return>") 'electric-indent-just-newline)
-			))))
+                        (local-set-key (kbd "M-<return>")
+									   'electric-indent-just-newline))))
+
 (electric-indent-mode -1)
 (savehist-mode 1)
 ;(require 'savekill)
@@ -324,7 +326,7 @@
 (global-linum-mode -1)
 ;; (load "~user/quicklisp/slime-helper.el")
 
-(icy-mode 1)
+;;(icy-mode 1)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
