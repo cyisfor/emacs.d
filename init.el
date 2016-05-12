@@ -75,12 +75,16 @@
 (defmacro if-load (p &rest block) (declare (indent defun))
           `(when (file-directory-p ,p)
              (push ,p load-path)
-             ,@block))
+             ,@(append block
+					   '((pop load-path)))))
 
 (require 'package-require)
 
 (if-load "~user/packages/git/lua-mode/"
   (require 'lua-mode))
+
+(if-load "~user/packages/hg/wisp/"
+  (require 'wisp-mode))
 
 ;; (if-load "~user/packages/bzr/components-python-mode"
 ;;          (require 'python-components-mode))
@@ -113,12 +117,18 @@
 
 (dolist (type programmy-types)
          (add-hook (type->hook type)
+                   (if (eq type 'c)
+                       '(lambda ()
+                          (local-set-key (kbd "<return>") 'newline-and-indent)
+                          (local-set-key (kbd "C-<return>") 'c-indent-new-comment-line)
+						  (local-set-key (kbd "M-<return>") 'electric-indent-just-newli
+										 ne)
+						  )
                      '(lambda ()
                         (local-set-key (kbd "<return>") 'newline-and-indent)
                         (local-set-key (kbd "C-<return>") 'newline)
-                        (local-set-key (kbd "M-<return>")
-									   'electric-indent-just-newline))))
-
+                        (local-set-key (kbd "M-<return>") 'electric-indent-just-newline)
+			))))
 (electric-indent-mode -1)
 (savehist-mode 1)
 ;(require 'savekill)
