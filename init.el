@@ -50,7 +50,7 @@
 (push "~/.emacs.d/lisp" load-path)
 (byte-recompile-directory (expand-file-name "~/.emacs.d/lisp"))
 
-(define-key dired-mode-map "c" 'find-file)
+(require 'dired-create-file)
 
 (require 'frame-bufs)
 (frame-bufs-mode t)
