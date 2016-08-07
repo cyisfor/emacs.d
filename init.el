@@ -50,7 +50,10 @@
 (push "~/.emacs.d/lisp" load-path)
 (byte-recompile-directory (expand-file-name "~/.emacs.d/lisp"))
 
+(define-key dired-mode-map "c" 'find-file)
+
 (require 'frame-bufs)
+(frame-bufs-mode t)
 
 (push "/extra/home/packages/git/emacswiki.org" load-path)
 (require 'apropos-fn+var)
@@ -80,11 +83,12 @@
 
 (require 'package-require)
 
-(if-load "~user/packages/git/lua-mode/"
+(if-load "/extra/home/packages/git/lua-mode/"
   (require 'lua-mode))
 
-(if-load "~user/packages/hg/wisp/"
-  (require 'wisp-mode))
+(if-load "/extra/home/packages/hg/wisp/"
+  (require 'wisp-mode)
+  (add-to-list 'auto-mode-alist '("\\.wisp\\'" . wisp-mode)))
 
 ;; (if-load "~user/packages/bzr/components-python-mode"
 ;;          (require 'python-components-mode))
@@ -105,11 +109,14 @@
 				(setq do-smart-tabs t)
 				(smart-tabs-insinuate 'python)))
 
+(setq-default indent-tabs-mode t)
+
 (add-hook 'python-mode-hook
 		  #'(lambda ()			  
-			  (setq tab-width 2
+			  (setq 
 					indent-tabs-mode t
 					python-indent-offset 2
+					tab-width 2
 					py-indent-tabs-mode t)
 			  (do-smart-tabs)))
 
@@ -209,6 +216,18 @@
 (dolist (type edity-types)
   (add-hook (type->hook type) 'my-typo-init))
 
+(push `(yaml ?"
+			 ?"
+			 ,(decode-char 'ucs #x2018)
+			 ,(decode-char 'ucs #x2019))
+	  typopunct-language-alist)
+
+(add-hook 'yaml-mode-hook
+		  (lambda ()
+			(typopunct-change-language 'yaml)
+			(error "oops")
+			(typopunct-mode 1)))
+
 ;; (autoload 'bison-mode "bison-mode.el")
 ;; (autoload 'flex-mode "flex-mode.el")
 
@@ -216,6 +235,14 @@
 ;; 		       '(("\\.y$" . bison-mode)
 ;; 			 ("\\.l$" . flex-mode))
 ;; 		       auto-mode-alist))
+
+(defun fix-d ()
+	(interactive)
+	(save-excursion 
+		(goto-char (point-min))
+		(replace-string "	" "		")
+		(goto-char (point-min))
+		(replace-string "  " "	")))
 
 (defun herp-derp-emacs-sucks ()
   (require 'c-stuff))
@@ -320,6 +347,15 @@
 (add-hook 'scheme-mode-hook 'my-add-pretty-lambda)
 (add-hook 'racket-mode-hook 'my-add-pretty-lambda)
 
+(c-add-style "javascript" '("gnu"
+													(c-basic-offset . 1)))
+(setq c-default-style (cons '(javascript . "javascript")
+														c-default-style))
+
+(setq-default c-basic-offset 2
+							tab-width 2
+							indent-tabs-mode t)
+
 (defun sort-words (reverse beg end)
   "Sort words in region alphabetically, in REVERSE if negative.
     Prefixed with negative \\[universal-argument], sorts in reverse.
@@ -343,6 +379,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(backward-delete-char-untabify-method nil)
  '(bmkp-last-as-first-bookmark-file "/extra/hacker/.emacs.d/bookmarks")
  '(cursor-type (quote bar))
  '(global-hl-line-mode t)
@@ -355,6 +392,7 @@
  '(icicle-modal-cycle-up-keys (quote ([control up] [nil mouse-4] [mouse-4])))
  '(indent-tabs-mode t)
  '(inhibit-startup-screen t)
+ '(js-indent-level 2)
  '(kill-whole-line t)
  '(max-specpdl-size 3000)
  '(nxml-slash-auto-complete-flag t)
@@ -366,8 +404,9 @@
  '(scheme-program-name "csi -:c")
  '(sgml-xml-mode t)
  '(slime-auto-start (quote always))
- '(tab-width 4)
+ '(tab-width 2)
  '(track-eol t)
+ '(typopunct-buffer-language (quote english))
  '(visual-line-fringe-indicators (quote (nil right-curly-arrow))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
