@@ -32,9 +32,11 @@
 			(typopunct-mode 1)))
 
 (require 'dired-create-file)
-
-(require 'frame-bufs)
-(frame-bufs-mode t)
+(condition-case nil
+		(progn
+			(require 'frame-bufs)
+			(frame-bufs-mode t))
+	(error nil))
 
 ;(require 'ido-fixes)
 
