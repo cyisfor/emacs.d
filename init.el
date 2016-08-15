@@ -36,26 +36,26 @@
 (require 'frame-bufs)
 (frame-bufs-mode t)
 
-(push "/extra/home/packages/git/emacswiki.org" load-path)
-(require 'apropos-fn+var)
-(require 'icomplete+)
-(require 'mb-depth+)
-(pop load-path)
-(push "/extra/home/packages/git/xah-replace-pairs" load-path)
-(require 'curlify-quotes) ;; in load thou
-(pop load-path)
 ;(require 'ido-fixes)
 
 (require 'nostupidbackups)
 
 (require 'show-point-mode)
-(require 'exit-saver)
 
 (defmacro if-load (p &rest block) (declare (indent defun))
           `(when (file-directory-p ,p)
              (push ,p load-path)
              ,@(append block
 					   '((pop load-path)))))
+
+(if-load "/extra/home/packages/git/emacswiki.org" 
+	(require 'apropos-fn+var)
+	(require 'icomplete+)
+	(require 'mb-depth+))
+
+(if-load "/extra/home/packages/git/xah-replace-pairs"
+	;; in load thou
+	(require 'curlify-quotes)) 
 
 (require 'package-require)
 
