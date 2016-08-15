@@ -46,6 +46,8 @@
 
 (global-set-key "\C-co" 'switch-to-minibuffer) ;; Bind to `C-c o'
 
+(require 'exit-saver)
+
 (global-set-key (kbd "<f5>") 'save-buffers)
 ;;; auggggggh
 (define-key ctl-x-map [(s)] 'save-buffers)
@@ -88,7 +90,6 @@
 (setq-default c-basic-offset 2
 							tab-width 2
 							indent-tabs-mode t)
-
 
 
 (provide 'essential-stuff)
