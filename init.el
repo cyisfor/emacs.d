@@ -1,67 +1,70 @@
 (when (file-exists-p "~/.emacs.d/init.elc")
   (delete-file "~/.emacs.d/init.elc"))
 
-(global-set-key (kbd "C-z") ctl-x-map)
-(global-set-key (kbd "M-z") 'execute-extended-command)
-(global-set-key (kbd "M-k") 'zap-to-char) ; more useful than kill-sentence
-;; could set M-x to kill-sentence to complete the circle, meh
-
-(defun kill-whole-line-or-region (beg end &optional region direction)
-  (interactive (list (mark) (point) 'region) "P")
-  (if (region-active-p)
-      (kill-region beg end region)
-    (if (= (point) (line-end-position))
-		(kill-line)
-	  (kill-region (point) (line-end-position)))))
-
-(global-set-key (kbd "M-<right>") 'forward-list)
-(global-set-key (kbd "M-<left>") 'backward-list)
-(global-set-key (kbd "M-<up>") 'up-list)
-(global-set-key (kbd "C-k") 'kill-whole-line-or-region)
-(global-set-key (kbd "C-w") 'delete-other-windows)
-(global-set-key (kbd "M-l") 'redraw-display)
-(global-set-key (kbd "C-l") 'goto-line)
-(global-set-key (kbd "C-<pause>") 'delete-trailing-whitespace)
-(global-set-key (kbd "C-<backspace>") 'fixup-whitespace)
-
-(global-set-key (kbd "C-g") 'abort-recursive-edit)
-(global-set-key (kbd "C-]") 'keyboard-quit)
-
-(dolist (type '(
-				backward-kill-sentence
-				set-goal-column
-				))
-  (substitute-key-definition
-   type
-   'abort-recursive-edit
-   (current-global-map)))
-
-(defun switch-to-minibuffer ()
-  "Switch to minibuffer window."
-  (interactive)
-  (if (active-minibuffer-window)
-      (select-window (active-minibuffer-window))
-    (error "Minibuffer is not active")))
-
-(global-set-key "\C-co" 'switch-to-minibuffer) ;; Bind to `C-c o'
-
 (push "~/.emacs.d/lisp" load-path)
 (byte-recompile-directory (expand-file-name "~/.emacs.d/lisp"))
+(require 'essential-stuff)
+
+(require 'typopunct)
+(typopunct-change-language 'english t)
+(dolist (type programmy-types)
+  (add-hook (type->hook type) 'buffer-face-mode))
+(add-hook (type->hook 'dired) 'buffer-face-mode)
+
+(require 'loctitle)
+
+(defun my-typo-init ()
+  (typopunct-mode 1))
+
+(dolist (type edity-types)
+  (add-hook (type->hook type) 'my-typo-init))
+
+(push `(yaml ?"
+			 ?"
+			 ,(decode-char 'ucs #x2018)
+			 ,(decode-char 'ucs #x2019))
+	  typopunct-language-alist)
+
+(add-hook 'yaml-mode-hook
+		  (lambda ()
+			(typopunct-change-language 'yaml)
+			(error "oops")
+			(typopunct-mode 1)))
+
+(require 'dired-create-file)
+
+(require 'frame-bufs)
+(frame-bufs-mode t)
+
+(push "/extra/home/packages/git/emacswiki.org" load-path)
+(require 'apropos-fn+var)
+(require 'icomplete+)
+(require 'mb-depth+)
+(pop load-path)
+(push "/extra/home/packages/git/xah-replace-pairs" load-path)
+(require 'curlify-quotes) ;; in load thou
+(pop load-path)
+;(require 'ido-fixes)
+
+(require 'nostupidbackups)
 
 (require 'show-point-mode)
 (require 'exit-saver)
 
-(global-set-key (kbd "<f5>") 'save-buffers)
-
 (defmacro if-load (p &rest block) (declare (indent defun))
           `(when (file-directory-p ,p)
              (push ,p load-path)
-             ,@block))
+             ,@(append block
+					   '((pop load-path)))))
 
 (require 'package-require)
 
-(if-load "~user/packages/git/lua-mode/"
+(if-load "/extra/home/packages/git/lua-mode/"
   (require 'lua-mode))
+
+(if-load "/extra/home/packages/hg/wisp/"
+  (require 'wisp-mode)
+  (add-to-list 'auto-mode-alist '("\\.wisp\\'" . wisp-mode)))
 
 ;; (if-load "~user/packages/bzr/components-python-mode"
 ;;          (require 'python-components-mode))
@@ -82,31 +85,23 @@
 				(setq do-smart-tabs t)
 				(smart-tabs-insinuate 'python)))
 
-(add-hook 'python-mode-hook
-		  #'(lambda ()			  
-			  (setq tab-width 2
-					indent-tabs-mode t
-					python-indent-offset 2
-					py-indent-tabs-mode t)
-			  (do-smart-tabs)))
-
 (require 'types)
 
 (dolist (type programmy-types)
          (add-hook (type->hook type)
                    (if (eq type 'c)
                        '(lambda ()
-                          (local-set-key (kbd "<return>") 'c-indent-new-comment-line)
-                          (local-set-key (kbd "C-<return>") 'newline)
-						  (local-set-key (kbd "M-<return>") 'electric-indent-just-newline)
-			  )
+                          (local-set-key (kbd "<return>") 'newline-and-indent)
+                          (local-set-key (kbd "C-<return>") 'c-indent-new-comment-line)
+						  (local-set-key (kbd "M-<return>") 'electric-indent-just-newli
+										 ne)
+						  )
                      '(lambda ()
                         (local-set-key (kbd "<return>") 'newline-and-indent)
                         (local-set-key (kbd "C-<return>") 'newline)
                         (local-set-key (kbd "M-<return>") 'electric-indent-just-newline)
 			))))
-(electric-indent-mode -1)
-(savehist-mode 1)
+
 ;(require 'savekill)
 (require 'lazyclipboard)
 
@@ -152,38 +147,16 @@
 
 (setq auto-mode-alist (append
 		       '(("\.lua$" . lua-mode)
-				 ("\.md$" . html-mode)
-				 ("\.hish$" . html-mode)
-				 ("\.rkt$" . (lambda ()
-							   (racket-mode)
-							   (for-cool-schemes-only))))
+						 ("\.rkt$" . (lambda ()
+													 (racket-mode)
+													 (for-cool-schemes-only))))
 		       auto-mode-alist))
 
-(require 'htmlfixes)
-
 (autoload 'lua-mode "lua-mode" "Lua Editing mode." t)
-
-(require 'xmlstuff)
-(require 'gitcommit)
 
 (setq buffer-face-mode-face '(:family "Bitstream Vera Sans Mono" :height 140 :width semi-expanded))
 
 (global-set-key (kbd "C-f") 'buffer-face-mode)
-
-(dolist (type programmy-types)
-  (add-hook (type->hook type) 'buffer-face-mode))
-(add-hook (type->hook 'dired) 'buffer-face-mode)
-
-(require 'typopunct)
-(typopunct-change-language 'english t)
-
-(require 'loctitle)
-
-(defun my-typo-init ()
-  (typopunct-mode 1))
-
-(dolist (type edity-types)
-  (add-hook (type->hook type) 'my-typo-init))
 
 ;; (autoload 'bison-mode "bison-mode.el")
 ;; (autoload 'flex-mode "flex-mode.el")
@@ -192,6 +165,14 @@
 ;; 		       '(("\\.y$" . bison-mode)
 ;; 			 ("\\.l$" . flex-mode))
 ;; 		       auto-mode-alist))
+
+(defun fix-d ()
+	(interactive)
+	(save-excursion 
+		(goto-char (point-min))
+		(replace-string "	" "		")
+		(goto-char (point-min))
+		(replace-string "  " "	")))
 
 (defun herp-derp-emacs-sucks ()
   (require 'c-stuff))
@@ -276,10 +257,6 @@
 ;; (setq inferior-lisp-program "/usr/bin/sbcl")
 ;; (setq slime-contribs '(slime-fancy))
 
-(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
-  "Prevent annoying \"Active processes exist\" query when you quit Emacs."
-  (flet ((process-list ())) ad-do-it))
-
 (require 'sexpfun)
 
 (defun my-add-pretty-lambda ()
@@ -312,11 +289,14 @@
 (global-linum-mode -1)
 ;; (load "~user/quicklisp/slime-helper.el")
 
+;;(icy-mode 1)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(backward-delete-char-untabify-method nil)
  '(bmkp-last-as-first-bookmark-file "/extra/hacker/.emacs.d/bookmarks")
  '(cursor-type (quote bar))
  '(global-hl-line-mode t)
@@ -324,8 +304,12 @@
  '(global-visual-line-mode t)
  '(gofmt-command "goimports")
  '(ibuffer-always-compile-formats t)
+ '(icicle-modal-cycle-down-action-keys (quote ([nil (control mouse-5)] [(control mouse-5)])))
+ '(icicle-modal-cycle-down-keys (quote ([control down] [nil mouse-5] [mouse-5])))
+ '(icicle-modal-cycle-up-keys (quote ([control up] [nil mouse-4] [mouse-4])))
  '(indent-tabs-mode t)
  '(inhibit-startup-screen t)
+ '(js-indent-level 2)
  '(kill-whole-line t)
  '(max-specpdl-size 3000)
  '(nxml-slash-auto-complete-flag t)
@@ -337,8 +321,9 @@
  '(scheme-program-name "csi -:c")
  '(sgml-xml-mode t)
  '(slime-auto-start (quote always))
- '(tab-width 4)
+ '(tab-width 2)
  '(track-eol t)
+ '(typopunct-buffer-language (quote english))
  '(visual-line-fringe-indicators (quote (nil right-curly-arrow))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

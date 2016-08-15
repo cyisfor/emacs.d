@@ -2,7 +2,8 @@
   (interactive)
   (setq-local sgml-unclosed-tags nil)
   (setq-local sgml-xml-mode t)
-  (message "yas offing")
+	(setcdr (assoc "div" html-tag-alist)
+				'(("class" ("author") "")))
   (yas-minor-mode -1)  
   (setcdr (assoc "code" html-tag-alist) '(nil)))
 
