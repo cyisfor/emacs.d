@@ -45,8 +45,9 @@
 
 (require 'cl) ; for flet
 
+(setq translated-demon nil)
 (defun html-shortcuts ()
-  (when (eq translated-daemon nil)
+  (when (eq translated-demon nil)
     ;; http://stackoverflow.com/a/4513683
     (when (display-graphic-p)
       (keyboard-translate ?\C-i ?\H-i))
