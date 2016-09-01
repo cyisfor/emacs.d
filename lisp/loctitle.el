@@ -28,5 +28,9 @@
       (set-frame-parameter (selected-frame) 'title (tail-of name)))))
 
 (add-hook 'buffer-list-update-hook 'update-title)
-
+(add-hook 'focus-in-hook 'update-title)
+(defadvice switch-to-prev-buffer
+		(after update-now activate compile preactivate)
+	(update-title))
+	
 (provide 'loctitle)

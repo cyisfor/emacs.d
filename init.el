@@ -10,6 +10,8 @@
 ;(dolist (type programmy-types)
 ;  (add-hook (type->hook type) 'buffer-face-mode))
 (add-hook 'prog-mode-hook 'buffer-face-mode)
+;; ibuffer-mode etc:
+(add-hook 'special-mode-hook 'buffer-face-mode)
 (add-hook (type->hook 'dired) 'buffer-face-mode)
 
 (require 'loctitle)
@@ -64,8 +66,6 @@
 	;; in load thou
 	(require 'curlify-quotes)) 
 
-(require 'package-require)
-
 (if-load (unsafe-home "packages/git/lua-mode/")
   (require 'lua-mode))
 
@@ -73,7 +73,7 @@
   (require 'wisp-mode)
   (add-to-list 'auto-mode-alist '("\\.wisp\\'" . wisp-mode)))
 
-;; (if-load "~user/packages/bzr/components-python-mode"
+;; (if-load "~/packages/bzr/components-python-mode"
 ;;          (require 'python-components-mode))
 
 (defmacro when-require (what &rest body)
@@ -204,9 +204,11 @@
   (add-hook (type->hook type)
 			#'(lambda ()
 				(require 'xmlstuff))))
+
+(require 'package-require)
 (package-require 'bookmark+)
 
-;; (push "~user/packages/git/autopair/" load-path)
+;; (push "~/packages/git/autopair/" load-path)
 ;; (require 'autopair)
 ;; (dolist (type programmy-types)
 ;;          (add-hook (type->hook type)
@@ -214,7 +216,7 @@
 
 ;; (require 'python-skeleton)
 
-;; (push "~user/packages/git/rust-mode/" load-path)
+;; (push "~/packages/git/rust-mode/" load-path)
 ;; (require 'rust-mode)
 
 ;;(require 'haskell-mode-autoloads)
@@ -222,24 +224,24 @@
 ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
 ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 
-;;(push "~user/packages/git/emacs-haskell-unicode-input-method" load-path)
+;;(push "~/packages/git/emacs-haskell-unicode-input-method" load-path)
 ;;(require 'haskell-unicode-input-method)
 
 ;;(add-hook 'haskell-mode-hook 'quail-activate)
 
 (autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
 
-;; (load "~user/packages/git/lyqi/lyqi")
+;; (load "~/packages/git/lyqi/lyqi")
 ;; (setq auto-mode-alist (append
 ;;                        '(("\\.ly$" . lyqi-mode)
 ;;                          ("\\.ily$" . lyqi-mode))
 ;;                        auto-mode-alist))
 
-(if-load "~user/packages/git/nim-mode"
-;;(if-load "~user/code/"
+(if-load "~/packages/git/nim-mode"
+;;(if-load "~/code/"
   (require 'nim-mode))
 
-(if-load "~user/packages/git/go-mode.el/"
+(if-load "~/packages/git/go-mode.el/"
          (require 'go-mode-autoloads)
          (defun cancellable-gofmt-before-save ()
            (interactive)
@@ -254,7 +256,7 @@
          (push '("\\.go$" . gofmt-mode) auto-mode-alist))
 
 
-;; (push "~user/packages/git/slime" load-path)
+;; (push "~/packages/git/slime" load-path)
 ;; (require 'slime-autoloads)
 ;; (setq slime-lisp-implementations
 ;;       '((sbcl ("sbcl" "--core" "/extra/user/packages/git/slime/sbcl.core-for-slime"))))
@@ -292,7 +294,7 @@
 (line-number-mode 1)
 (column-number-mode 1)
 (global-linum-mode -1)
-;; (load "~user/quicklisp/slime-helper.el")
+;; (load "~/quicklisp/slime-helper.el")
 
 ;;(icy-mode 1)
 
@@ -321,7 +323,7 @@
 															(local-set-key
 															 (kbd "M-<return>")
 															 (quote electric-indent-just-newline)))
-														buffer-face-mode gitcommit-enhooken)))
+														buffer-face-mode gitcommit-enhooken)) t)
  '(ibuffer-always-compile-formats t)
  '(icicle-modal-cycle-down-action-keys (quote ([nil (control mouse-5)] [(control mouse-5)])))
  '(icicle-modal-cycle-down-keys (quote ([control down] [nil mouse-5] [mouse-5])))
@@ -340,6 +342,7 @@
  '(scheme-program-name "csi -:c")
  '(sgml-xml-mode t)
  '(slime-auto-start (quote always))
+ '(switch-to-visible-buffer t)
  '(tab-width 2)
  '(track-eol t)
  '(typopunct-buffer-language (quote english))
