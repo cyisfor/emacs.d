@@ -133,14 +133,14 @@
  (if (not (file-exists-p "~/.emacs.d/undo-history")) (make-directory "~/.emacs.d/undo-history/"))
  (defadvice undo-tree-make-history-save-file-name
 	 (after undo-tree activate)
-   ((setq ad-return-value (concat "~/.emacs.d/undo-history/"
-										(substring
-					   (bonglify (and )d-return-value)
+   (setq ad-return-value (concat "~/.emacs.d/undo-history/"
+																 (substring
+					   (bonglify ad-return-value)
 					   (+ 3 (string-bytes "~/.emacs.d/undo-history/")))
-										".gz")))
+																 ".gz")))
  (setq undo-tree-auto-save-history t)
  
- (setq undo-limit 800000)))
+ (setq undo-limit 800000))
 
 (cl-macrolet ((insertit (what)
 						`(lambda ()

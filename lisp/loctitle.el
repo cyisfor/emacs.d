@@ -16,21 +16,20 @@
 	(eq s (intern (user-login-name))))))
 
 (defun tail-of (s)
-  (let ((parts (reverse (remove-if 'not-important (split-string s "/" t)))))
+  (let ((parts (reverse (cl-remove-if 'not-important (split-string s "/" t)))))
     (if (cdr parts)
 	(concat (cadr parts) " - " (car parts))
       (car parts))))
 
-(defun update-title ()
+(defun update-title (&optional buffer)
   (interactive)
-  (let ((name (buffer-file-name (current-buffer))))
-    (when name
-      (set-frame-parameter (selected-frame) 'title (tail-of name)))))
+	(let* ((buffer (or buffer (current-buffer)))
+				 (file-name (buffer-file-name buffer))
+				 (name (if file-name (tail-of file-name) (buffer-name buffer))))
+		(message "name %s %s" name buffer)
+		(set-frame-parameter (selected-frame) 'title name)))
 
-(add-hook 'buffer-list-update-hook 'update-title)
-(add-hook 'focus-in-hook 'update-title)
-(defadvice switch-to-prev-buffer
-		(after update-now activate compile preactivate)
-	(update-title))
+(add-hook 'window-configuration-change-hook 'update-title)
+;;(add-hook 'focus-in-hook 'update-title)
 	
 (provide 'loctitle)
