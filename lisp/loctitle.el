@@ -26,7 +26,6 @@
 	(let* ((buffer (or buffer (current-buffer)))
 				 (file-name (buffer-file-name buffer))
 				 (name (if file-name (tail-of file-name) (buffer-name buffer))))
-		(message "name %s %s" name buffer)
 		(set-frame-parameter (selected-frame) 'title name)))
 
 (add-hook 'window-configuration-change-hook 'update-title)
