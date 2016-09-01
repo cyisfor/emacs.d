@@ -7,8 +7,9 @@
 
 (require 'typopunct)
 (typopunct-change-language 'english t)
-(dolist (type programmy-types)
-  (add-hook (type->hook type) 'buffer-face-mode))
+;(dolist (type programmy-types)
+;  (add-hook (type->hook type) 'buffer-face-mode))
+(add-hook 'prog-mode-hook 'buffer-face-mode)
 (add-hook (type->hook 'dired) 'buffer-face-mode)
 
 (require 'loctitle)
@@ -28,7 +29,6 @@
 (add-hook 'yaml-mode-hook
 		  (lambda ()
 			(typopunct-change-language 'yaml)
-			(error "oops")
 			(typopunct-mode 1)))
 
 (require 'dired-create-file)
@@ -50,21 +50,26 @@
              ,@(append block
 					   '((pop load-path)))))
 
-(if-load "/extra/home/packages/git/emacswiki.org" 
+(defun unsafe-home (path)
+	"The \"unsafe\" home directory, that public stuff can go in, like public source code repositories"
+	(let ((unsafe-home "/extra/home"))
+		(concat (file-name-as-directory unsafe-home) path)))
+
+(if-load (unsafe-home "packages/git/emacswiki.org")
 	(require 'apropos-fn+var)
 	(require 'icomplete+)
 	(require 'mb-depth+))
 
-(if-load "/extra/home/packages/git/xah-replace-pairs"
+(if-load (unsafe-home "packages/git/xah-replace-pairs")
 	;; in load thou
 	(require 'curlify-quotes)) 
 
 (require 'package-require)
 
-(if-load "/extra/home/packages/git/lua-mode/"
+(if-load (unsafe-home "packages/git/lua-mode/")
   (require 'lua-mode))
 
-(if-load "/extra/home/packages/hg/wisp/"
+(if-load (unsafe-home "packages/hg/wisp/")
   (require 'wisp-mode)
   (add-to-list 'auto-mode-alist '("\\.wisp\\'" . wisp-mode)))
 
@@ -90,19 +95,17 @@
 (require 'types)
 
 (dolist (type programmy-types)
-         (add-hook (type->hook type)
-                   (if (eq type 'c)
-                       '(lambda ()
-                          (local-set-key (kbd "<return>") 'newline-and-indent)
-                          (local-set-key (kbd "C-<return>") 'c-indent-new-comment-line)
-						  (local-set-key (kbd "M-<return>") 'electric-indent-just-newli
-										 ne)
-						  )
-                     '(lambda ()
-                        (local-set-key (kbd "<return>") 'newline-and-indent)
-                        (local-set-key (kbd "C-<return>") 'newline)
-                        (local-set-key (kbd "M-<return>") 'electric-indent-just-newline)
-			))))
+	(add-hook (type->hook type)
+						(if (eq type 'c)
+								'(lambda ()
+									 (local-set-key (kbd "<return>") 'newline-and-indent)
+									 (local-set-key (kbd "C-<return>") 'c-indent-new-comment-line)
+									 (local-set-key (kbd "M-<return>") 'electric-indent-just-newline))
+							'(lambda ()
+								 (local-set-key (kbd "<return>") 'newline-and-indent)
+								 (local-set-key (kbd "C-<return>") 'newline)
+								 (local-set-key (kbd "M-<return>") 'electric-indent-just-newline)
+								 ))))
 
 ;(require 'savekill)
 (require 'lazyclipboard)
@@ -305,6 +308,20 @@
  '(global-linum-mode t)
  '(global-visual-line-mode t)
  '(gofmt-command "goimports")
+ '(haskell-mode-hook
+	 (quote
+		(turn-on-haskell-indent turn-on-font-lock setup-yas
+														(lambda nil
+															(local-set-key
+															 (kbd "<return>")
+															 (quote newline-and-indent))
+															(local-set-key
+															 (kbd "C-<return>")
+															 (quote newline))
+															(local-set-key
+															 (kbd "M-<return>")
+															 (quote electric-indent-just-newline)))
+														buffer-face-mode gitcommit-enhooken)))
  '(ibuffer-always-compile-formats t)
  '(icicle-modal-cycle-down-action-keys (quote ([nil (control mouse-5)] [(control mouse-5)])))
  '(icicle-modal-cycle-down-keys (quote ([control down] [nil mouse-5] [mouse-5])))
