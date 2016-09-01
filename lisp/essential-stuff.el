@@ -55,8 +55,8 @@
 (setq-default indent-tabs-mode t)
 
 (add-hook 'python-mode-hook
-		  #'(lambda ()			  
-			  (setq 
+		  #'(lambda ()
+			  (setq
 					indent-tabs-mode t
 					python-indent-offset 2
 					tab-width 2
@@ -80,7 +80,7 @@
 
 (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
   "Prevent annoying \"Active processes exist\" query when you quit Emacs."
-  (flet ((process-list ())) ad-do-it))
+  (cl-flet ((process-list ())) ad-do-it))
 
 (c-add-style "javascript" '("gnu"
 													(c-basic-offset . 1)))
@@ -91,5 +91,9 @@
 							tab-width 2
 							indent-tabs-mode t)
 
+
+(defadvice other-buffer (before switch-to-visible-dammit
+																activate preactivate compile)
+	(ad-set-arg 1 t))
 
 (provide 'essential-stuff)
