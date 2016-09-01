@@ -1,3 +1,5 @@
+(provide 'extra-stuff)
+
 (require 'dired-create-file)
 (condition-case nil
 		(progn
@@ -234,3 +236,4 @@
 ;; (load "~/quicklisp/slime-helper.el")
 
 ;;(icy-mode 1)
+

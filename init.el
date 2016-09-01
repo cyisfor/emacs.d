@@ -42,7 +42,11 @@
 						 (local-set-key (kbd "M-<return>") 'electric-indent-just-newline)))
 
 (when (eq nil (getenv "quick"))
-	(require 'extra-stuff))
+	(require 'server)
+	(defadvice server-start (before load-extra-stuff
+																	activate preactivate compile)
+		(message "LOADAN COOL STUFFFS")
+		(require 'extra-stuff)))
 
 (setq buffer-face-mode-face '(:family "Bitstream Vera Sans Mono" :height 140 :width semi-expanded))
 
