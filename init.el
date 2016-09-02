@@ -2,7 +2,7 @@
   (delete-file "~/.emacs.d/init.elc"))
 
 (push "~/.emacs.d/lisp" load-path)
-(byte-recompile-directory (expand-file-name "~/.emacs.d/lisp"))
+(byte-recompile-directory (expand-file-name "~/.emacs.d/lisp") 0)
 (require 'essential-stuff)
 
 (require 'typopunct)
