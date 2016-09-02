@@ -17,6 +17,18 @@
 
 ;;; Code:
 
+(defcustom auto-compile-delete-stray-dest t
+  "Whether to remove stray byte code files.
+
+If this is non-nil byte code files without a corresponding source
+file are removed as they are encountered.  This happens in the
+functions `auto-compile-on-save' and `toggle-auto-compile'.  The
+main purpose of this functionality is to prevent leftover byte
+code files from shadowing a source or byte code file in a
+directory that comes later in the `load-path'."
+  :group 'auto-compile
+  :type 'boolean)
+
 ;; if automatically compiling files, we must load the newer preferentially
 (setq load-prefer-newer t)
 
@@ -72,9 +84,10 @@ file would get loaded."
                    (file-writable-p elc)
                    (file-newer-than-file-p el elc))
                 (and
+                 (file-writable-p elc)
                  (equal (substring el -3) ".el")
                  auto-compile-always-compile))
-          (message "um %s %d %d %d" elc
+          (message "um %s %s %s %s" elc
                    (file-exists-p elc)
                    (file-writable-p elc)
                    (file-newer-than-file-p el elc))
