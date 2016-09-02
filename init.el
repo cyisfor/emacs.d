@@ -1,8 +1,10 @@
+;; -*- no-byte-compile: t -*-
 (when (file-exists-p "~/.emacs.d/init.elc")
   (delete-file "~/.emacs.d/init.elc"))
 
 (push "~/.emacs.d/lisp" load-path)
-(byte-recompile-directory (expand-file-name "~/.emacs.d/lisp"))
+(require 'auto-compile)
+
 (require 'essential-stuff)
 
 (require 'typopunct)
