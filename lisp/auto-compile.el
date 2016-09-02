@@ -25,6 +25,21 @@
 (require 'package-require)
 (package-require 'packed)
 
+(defun auto-compile-delete-dest (dest &optional failurep)
+  (unless failurep
+    (--when-let (get-file-buffer (packed-el-file dest))
+      (with-current-buffer it
+        (kill-local-variable 'auto-compile-pretend-byte-compiled))))
+  (condition-case nil
+      (when (file-exists-p dest)
+        (message "Deleting %s..." dest)
+        (delete-file dest)
+        (message "Deleting %s...done" dest))
+    (file-error
+     (auto-compile-ding)
+     (message "Deleting %s...failed" dest))))
+
+
 ;;; Auto-Compile-On-Load Mode
 
 ;;;###autoload
@@ -33,9 +48,7 @@
 
 A library needs to be recompiled if the source file is newer than
 it's byte-compile destination.  Without this advice the outdated
-byte code file would be loaded instead.
-
-Also see the related `auto-compile-on-save-mode'."
+byte code file would be loaded instead."
   :lighter auto-compile-on-load-mode-lighter
   :group 'auto-compile
   :global t
