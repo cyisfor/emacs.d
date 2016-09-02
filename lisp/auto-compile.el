@@ -18,7 +18,7 @@
 
 ;;; Code:
 
-(defvar auto-compile-always-compile t
+(defcustom auto-compile-always-compile t
   "Should we compile files for which no .elc exists, but a .el file exists?
 
 Skips some obviously bad to compile names..."
