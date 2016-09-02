@@ -40,31 +40,7 @@
      (message "Deleting %s...failed" dest))))
 
 
-;;; Auto-Compile-On-Load Mode
-
-;;;###autoload
-(define-minor-mode auto-compile-on-load-mode
-  "Before loading a library recompile it if it needs recompilation.
-
-A library needs to be recompiled if the source file is newer than
-it's byte-compile destination.  Without this advice the outdated
-byte code file would be loaded instead."
-  :lighter auto-compile-on-load-mode-lighter
-  :group 'auto-compile
-  :global t
-  (cond (auto-compile-on-load-mode
-         (ad-enable-advice  'load    'before 'auto-compile-on-load)
-         (ad-enable-advice  'require 'before 'auto-compile-on-load)
-         (ad-activate 'load)
-         (ad-activate 'require))
-        (t
-         (ad-disable-advice 'load    'before 'auto-compile-on-load)
-         (ad-disable-advice 'require 'before 'auto-compile-on-load))))
-
-(defvar auto-compile-on-load-mode-lighter ""
-  "Mode lighter for Auto-Compile-On-Load Mode.")
-
-(defadvice load (before auto-compile-on-load disable)
+(defadvice load (before auto-compile-on-load activate preactivate compile)
   ;; (file &optional noerror nomessage nosuffix must-suffix)
   "Before loading the library recompile it if it needs recompilation.
 It needs recompilation if it is newer than the byte-compile
@@ -72,7 +48,7 @@ destination.  Without this advice the outdated byte-compiled
 file would get loaded."
   (auto-compile-on-load file nosuffix))
 
-(defadvice require (before auto-compile-on-load disable)
+(defadvice require (before auto-compile-on-load activate preactivate compile)
   ;; (feature &optional FILENAME NOERROR)
   "Before loading the library recompile it if it needs recompilation.
 It needs recompilation if it is newer than the byte-compile
@@ -108,14 +84,14 @@ file would get loaded."
                 (packed-byte-compile-file el)
                 (message "Recompiling %s...done" el))
             (error
-             (message "Recompiling %s...failed" el))))
-         (when elc
-           (auto-compile-delete-dest elc t)))))))
-            (when auto-compile-delete-stray-dest
-              (setq el* (locate-library file))
-              (unless (equal (file-name-directory el)
-                             (file-name-directory el*))
-                (auto-compile-delete-dest el* t))))
+             (message "Recompiling %s...failed" el)
+             (when elc
+               (auto-compile-delete-dest elc t))))
+          (when auto-compile-delete-stray-dest
+            (setq el* (locate-library file))
+            (unless (equal (file-name-directory el)
+                           (file-name-directory el*))
+              (auto-compile-delete-dest el* t))))))))
 
 
 (provide 'auto-compile)
