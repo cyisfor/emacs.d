@@ -3,10 +3,7 @@
   (delete-file "~/.emacs.d/init.elc"))
 
 (push "~/.emacs.d/lisp" load-path)
-(setq load-prefer-newer t)
-(require 'package-require)
-(package-require 'auto-compile)
-(auto-compile-on-load-mode)
+(require 'auto-compile)
 
 (require 'essential-stuff)
 

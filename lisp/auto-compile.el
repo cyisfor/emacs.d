@@ -36,7 +36,7 @@
         (delete-file dest)
         (message "Deleting %s...done" dest))
     (file-error
-     (auto-compile-ding)
+     (ding)
      (message "Deleting %s...failed" dest))))
 
 
@@ -89,28 +89,34 @@ file would get loaded."
   (unless (member file auto-compile--loading)
     (let ((auto-compile--loading (cons file auto-compile--loading))
           byte-compile-verbose el elc el*)
-      (condition-case nil
-          (when (setq el (packed-locate-library file nosuffix))
-            (setq elc (byte-compile-dest-file el))
-              (when (if (file-exists-p elc)
-                        (and
-                         (file-writable-p elc)
-                         (file-newer-than-file-p el elc))
-                      (and
-                       (equal (substring el -3) ".el")
-                       auto-compile-always-compile))
-              (message "Recompiling %s..." el)
-              (packed-byte-compile-file el)
-              (message "Recompiling %s...done" el))
+      (when (setq el (packed-locate-library file nosuffix))
+        (setq elc (byte-compile-dest-file el))
+        (when (if (file-exists-p elc)
+                  (and
+                   (file-writable-p elc)
+                   (file-newer-than-file-p el elc))
+                (and
+                 (equal (substring el -3) ".el")
+                 auto-compile-always-compile))
+          (message "um %s %d %d %d" elc
+                   (file-exists-p elc)
+                   (file-writable-p elc)
+                   (file-newer-than-file-p el elc))
+          (message "Recompiling %s..." el)
+          (condition-case nil
+              (progn
+                (packed-byte-compile-file el)
+                (message "Recompiling %s...done" el))
+            (error
+             (message "Recompiling %s...failed" el))))
+         (when elc
+           (auto-compile-delete-dest elc t)))))))
             (when auto-compile-delete-stray-dest
               (setq el* (locate-library file))
               (unless (equal (file-name-directory el)
                              (file-name-directory el*))
                 (auto-compile-delete-dest el* t))))
-        (error
-         (message "Recompiling %s...failed" el)
-         (when elc
-           (auto-compile-delete-dest elc t)))))))
+
 
 (provide 'auto-compile)
 ;; Local Variables:
