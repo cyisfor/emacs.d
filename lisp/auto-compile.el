@@ -1,6 +1,7 @@
 ;;; auto-compile.el --- automatically compile Emacs Lisp libraries
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
+;; heavily modded by cy to just do what it's supposed to do.
 ;; Created: 20080830
 ;; Package-Requires: ((emacs "24.3") (packed "0.5.3"))
 ;; Package-Version: 20160711.1012
@@ -16,6 +17,13 @@
 ;;     (require 'auto-compile)
 
 ;;; Code:
+
+(defvar auto-compile-always-compile t
+  "Should we compile files for which no .elc exists, but a .el file exists?
+
+Skips some obviously bad to compile names..."
+  :group 'auto-compile
+  :type 'boolean)
 
 (defcustom auto-compile-delete-stray-dest t
   "Whether to remove stray byte code files.
@@ -38,19 +46,13 @@ directory that comes later in the `load-path'."
 (package-require 'packed)
 
 (defun auto-compile-delete-dest (dest &optional failurep)
-  (unless failurep
-    (--when-let (get-file-buffer (packed-el-file dest))
-      (with-current-buffer it
-        (kill-local-variable 'auto-compile-pretend-byte-compiled))))
   (condition-case nil
       (when (file-exists-p dest)
         (message "Deleting %s..." dest)
-        (delete-file dest)
-        (message "Deleting %s...done" dest))
+        (delete-file dest))
     (file-error
      (ding)
      (message "Deleting %s...failed" dest))))
-
 
 (defadvice load (before auto-compile-on-load activate preactivate compile)
   ;; (file &optional noerror nomessage nosuffix must-suffix)
@@ -71,8 +73,6 @@ file would get loaded."
 
 (defvar auto-compile--loading nil)
 
-(defvar auto-compile-always-compile t)
-
 (defun auto-compile-on-load (file &optional nosuffix)
   (unless (member file auto-compile--loading)
     (let ((auto-compile--loading (cons file auto-compile--loading))
@@ -84,9 +84,9 @@ file would get loaded."
                    (file-writable-p elc)
                    (file-newer-than-file-p el elc))
                 (and
+                 auto-compile-always-compile
                  (file-writable-p elc)
-                 (equal (substring el -3) ".el")
-                 auto-compile-always-compile))
+                 (equal (substring el -3) ".el")))
           (message "um %s %s %s %s" elc
                    (file-exists-p elc)
                    (file-writable-p elc)
@@ -94,8 +94,8 @@ file would get loaded."
           (message "Recompiling %s..." el)
           (condition-case nil
               (progn
-                (packed-byte-compile-file el)
-                (message "Recompiling %s...done" el))
+                (message "Recompiling %s..." el)
+                (packed-byte-compile-file el))
             (error
              (message "Recompiling %s...failed" el)
              (when elc
@@ -106,11 +106,7 @@ file would get loaded."
                            (file-name-directory el*))
               (auto-compile-delete-dest el* t))))))))
 
-
 (provide 'auto-compile)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 
 ;; This file is not part of GNU Emacs.
 
